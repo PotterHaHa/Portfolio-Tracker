@@ -98,7 +98,8 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .btn-primary{background:var(--green-mid);border-color:var(--green-mid);color:#fff}
 .btn-primary:hover{background:#19b585;border-color:#19b585}
 .btn-sm{padding:4px 8px;font-size:12px}
-.btn-danger{border-color:rgba(240,92,110,.4);color:var(--red)}.btn-danger:hover{background:var(--red-dim)}
+.btn-edit{border-color:rgba(74,158,255,.45);color:var(--blue);background:var(--blue-dim)}.btn-edit:hover{background:rgba(74,158,255,.22);border-color:var(--blue)}
+.btn-danger{border-color:rgba(240,92,110,.45);color:var(--red);background:var(--red-dim)}.btn-danger:hover{background:rgba(240,92,110,.22);border-color:var(--red)}
 .btn-row{display:flex;gap:8px;flex-wrap:wrap}
 
 /* charts */
@@ -306,7 +307,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
     <h2 style="margin-bottom:1rem;font-size:15px;font-weight:600">目前持股清單</h2>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>代號</th><th>名稱</th><th>市場</th><th>股數</th><th>成本</th><th>殖利率</th><th>頻率</th><th>備註</th><th style="width:80px">操作</th></tr></thead>
+        <thead><tr><th>代號</th><th>名稱</th><th>市場</th><th>股數</th><th>成本</th><th>殖利率</th><th>頻率</th><th>備註</th><th style="width:150px">操作</th></tr></thead>
         <tbody id="manageBody"></tbody>
       </table>
     </div>
@@ -790,8 +791,8 @@ function renderManage() {
     <td><span class="dim" style="font-size:12px">${freqMap[h.freq]||''}</span></td>
     <td style="color:var(--text3);font-size:11px;max-width:160px">${h.note||''}</td>
     <td style="white-space:nowrap">
-      <button class="btn btn-sm" onclick="editHolding(${i})" style="margin-right:4px"><i class="ti ti-edit"></i></button>
-      <button class="btn btn-sm btn-danger" onclick="deleteHolding(${i})"><i class="ti ti-trash"></i></button>
+      <button class="btn btn-sm btn-edit" onclick="editHolding(${i})" style="margin-right:6px"><i class="ti ti-edit"></i> 編輯</button>
+      <button class="btn btn-sm btn-danger" onclick="deleteHolding(${i})"><i class="ti ti-trash"></i> 刪除</button>
     </td>
   </tr>`).join('');
 }

@@ -175,9 +175,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
     <input class="lock-input" type="password" id="lockInput" placeholder="••••••••" autocomplete="current-password">
     <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:14px" onclick="handleLock()" id="lockBtn">解鎖</button>
     <div class="lock-err" id="lockErr"></div>
-    <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border)">
+    <div id="freshBtn" style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border)">
       <button class="btn" style="width:100%;justify-content:center;font-size:12px;color:var(--text3)" onclick="startFresh()">
-        <i class="ti ti-plus"></i> 沒有資料，從頭開始（設定新密碼）
+        <i class="ti ti-plus"></i> 沒有資料，從頭開始（重設密碼）
       </button>
     </div>
   </div>
@@ -429,43 +429,62 @@ function defaultHoldings() {
 // ════════════════════════════════════════════
 //  鎖畫面邏輯
 // ════════════════════════════════════════════
-const hash = location.hash.slice(1);
-const hasData = hash.length > 20;
 
-if (!hasData) {
-  // 沒有 hash 資料：顯示「設定新密碼」模式
-  document.getElementById('lockTitle').textContent = '設定密碼';
-  document.getElementById('lockSub').textContent = '這是你第一次使用。設定一個密碼來保護你的持股資料，日後每次開啟都需要輸入。';
-  document.getElementById('lockBtn').textContent = '設定並開始';
-  document.querySelector('.lock-box > button:last-child').style.display = 'none';
+// 每次呼叫都重新讀，避免 const 在頁面載入後就固定住
+function getRawHash() { return location.hash.slice(1); }
+function hasEncryptedData() { return getRawHash().length > 40; }
+
+function initLockScreen() {
+  if (!hasEncryptedData()) {
+    document.getElementById('lockTitle').textContent = '設定密碼';
+    document.getElementById('lockSub').textContent = '第一次使用，請設定一個密碼來保護持股資料。之後每次開啟書籤 URL 都需要輸入。';
+    document.getElementById('lockBtn').textContent = '設定並開始';
+    // 隱藏「從頭開始」按鈕（全新使用時不需要）
+    const freshBtn = document.getElementById('freshBtn');
+    if (freshBtn) freshBtn.style.display = 'none';
+  } else {
+    document.getElementById('lockTitle').textContent = '輸入密碼';
+    document.getElementById('lockSub').textContent = '請輸入你設定的密碼來解鎖持股資料。';
+    document.getElementById('lockBtn').textContent = '解鎖';
+    const freshBtn = document.getElementById('freshBtn');
+    if (freshBtn) freshBtn.style.display = 'block';
+  }
 }
 
+initLockScreen();
 document.getElementById('lockInput').addEventListener('keydown', e => { if (e.key === 'Enter') handleLock(); });
 
 async function handleLock() {
   const pw = document.getElementById('lockInput').value;
-  if (pw.length < 4) { document.getElementById('lockErr').textContent = '密碼至少 4 個字元'; return; }
-  document.getElementById('lockBtn').disabled = true;
-  document.getElementById('lockBtn').textContent = '處理中...';
+  if (pw.length < 4) {
+    document.getElementById('lockErr').textContent = '密碼至少 4 個字元';
+    return;
+  }
+  const btn = document.getElementById('lockBtn');
+  btn.disabled = true;
+  btn.textContent = '處理中...';
+  document.getElementById('lockErr').textContent = '';
 
-  if (!hasData) {
-    // 新設定：直接用預設資料
+  if (!hasEncryptedData()) {
+    // ── 全新設定：載入預設持股，立刻要求存書籤 ──
     currentPassword = pw;
     holdings = defaultHoldings();
     document.getElementById('lockOverlay').style.display = 'none';
     renderPortfolio();
-    // 立刻讓他存一次書籤
-    setTimeout(() => openSaveModal(), 400);
+    setTimeout(() => openSaveModal(), 300);
   } else {
+    // ── 已有資料：嘗試解密 ──
     try {
-      holdings = await decrypt(hash, pw);
+      const decrypted = await decrypt(getRawHash(), pw);
+      if (!Array.isArray(decrypted)) throw new Error('格式錯誤');
+      holdings = decrypted;
       currentPassword = pw;
       document.getElementById('lockOverlay').style.display = 'none';
       renderPortfolio();
     } catch {
       document.getElementById('lockErr').textContent = '密碼錯誤，請再試一次';
-      document.getElementById('lockBtn').disabled = false;
-      document.getElementById('lockBtn').textContent = '解鎖';
+      btn.disabled = false;
+      btn.textContent = '解鎖';
       document.getElementById('lockInput').value = '';
       document.getElementById('lockInput').focus();
     }
@@ -473,13 +492,11 @@ async function handleLock() {
 }
 
 function startFresh() {
-  location.hash = '';
-  document.getElementById('lockTitle').textContent = '設定密碼';
-  document.getElementById('lockSub').textContent = '設定一個密碼來保護你的持股資料。';
-  document.getElementById('lockBtn').textContent = '設定並開始';
-  document.querySelector('.lock-box > button:last-child').style.display = 'none';
+  // 清除 hash 並切換到設定密碼模式（不重整頁面）
+  history.replaceState(null, '', location.pathname);
   document.getElementById('lockInput').value = '';
   document.getElementById('lockErr').textContent = '';
+  initLockScreen();
 }
 
 // ════════════════════════════════════════════
@@ -488,9 +505,12 @@ function startFresh() {
 async function openSaveModal() {
   if (!currentPassword) return;
   const encrypted = await encrypt(holdings, currentPassword);
-  const url = location.origin + location.pathname + '#' + encrypted;
-  document.getElementById('savedUrl').textContent = url;
-  location.hash = encrypted;  // 同步更新當前 hash
+
+  // 用 replaceState 寫入 hash，不觸發頁面跳轉也不加歷史記錄
+  const newUrl = location.origin + location.pathname + '#' + encrypted;
+  history.replaceState(null, '', newUrl);
+
+  document.getElementById('savedUrl').textContent = newUrl;
   document.getElementById('saveModal').classList.add('show');
   document.getElementById('copyConfirm').style.display = 'none';
 }

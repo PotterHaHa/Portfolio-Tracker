@@ -315,7 +315,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 
   <!-- ══ 退休試算 ══ -->
   <div id="retire" class="section">
-    <h2 style="margin-bottom:1.5rem;font-size:15px;font-weight:600">退休複利試算</h2>
+    <h2 style="margin-bottom:1.25rem;font-size:15px;font-weight:600"><i class="ti ti-trending-up" style="color:var(--green)"></i> 累積階段：複利達標試算</h2>
     <div class="form-box">
       <div class="form-grid g2" style="margin-bottom:1.5rem">
         <div><label class="form-label">目前總資產 (NT$)</label><input id="rInitial" type="number" placeholder="自動帶入總成本"></div>
@@ -349,7 +349,120 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
       <div class="chart-canvas" style="height:220px"><canvas id="retireChart" role="img" aria-label="資產成長曲線"></canvas></div>
       <div id="retireScenarios" style="margin-top:1.5rem"></div>
     </div>
+
+    <hr class="divider">
+
+    <h2 style="margin-bottom:6px;font-size:15px;font-weight:600"><i class="ti ti-cash-banknote" style="color:var(--amber)"></i> 提領階段：退休金提領儀表板</h2>
+    <p style="font-size:12px;color:var(--text3);margin-bottom:1.25rem;line-height:1.7">
+      以下為財務參考，非投資建議。整合 4% 法則、Guyton-Klinger 動態護欄、以及你的配息覆蓋分析。
+    </p>
+
+    <div class="form-box">
+      <div class="form-grid g2" style="margin-bottom:1.25rem">
+        <div><label class="form-label">退休本金 (NT$)</label><input id="wPrincipal" type="number" value="20000000" oninput="calcWithdraw()"></div>
+        <div><label class="form-label">退休後每年想要的生活費 (NT$)</label><input id="wSpend" type="number" value="800000" oninput="calcWithdraw()"></div>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label">提領率 (%)</span>
+        <input type="range" min="2.5" max="6" step="0.1" value="4" id="wRate" oninput="calcWithdraw()">
+        <span class="slider-val" id="wRateOut">4.0%</span>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
+        <button class="btn btn-sm" onclick="setWRate(3.5)">保守 3.5%</button>
+        <button class="btn btn-sm" onclick="setWRate(4.0)">經典 4.0%</button>
+        <button class="btn btn-sm" onclick="setWRate(4.7)">Bengen 4.7%</button>
+        <button class="btn btn-sm" onclick="setWRate(5.2)">護欄起始 5.2%</button>
+      </div>
+    </div>
+
+    <!-- 4% 法則卡片 -->
+    <div class="metric-row">
+      <div class="mc mc-accent">
+        <div class="mc-label">每年可提領</div>
+        <div class="mc-val num" id="wAnnual">—</div>
+        <div class="mc-sub" id="wRateLabel">提領率 4.0%</div>
+      </div>
+      <div class="mc">
+        <div class="mc-label">每月可提領</div>
+        <div class="mc-val num" id="wMonthly">—</div>
+        <div class="mc-sub">NT$ / 月</div>
+      </div>
+      <div class="mc">
+        <div class="mc-label">vs 你的目標生活費</div>
+        <div class="mc-val num" id="wVsSpend">—</div>
+        <div class="mc-sub" id="wVsSpendLabel">—</div>
+      </div>
+    </div>
+
+    <!-- 配息覆蓋分析 -->
+    <div class="form-box" style="border-color:rgba(34,211,154,.25)">
+      <div style="font-size:13px;font-weight:600;margin-bottom:12px"><i class="ti ti-coins" style="color:var(--green)"></i> 配息覆蓋分析（你不用賣股票的部分）</div>
+      <div class="metric-row" style="margin-bottom:0">
+        <div class="mc">
+          <div class="mc-label">組合加權殖利率</div>
+          <div class="mc-val num" id="wYield">—</div>
+          <div class="mc-sub">依目前持股計算</div>
+        </div>
+        <div class="mc">
+          <div class="mc-label">本金可生年配息</div>
+          <div class="mc-val num" id="wDivIncome">—</div>
+          <div class="mc-sub">純現金流，不動本金</div>
+        </div>
+        <div class="mc" id="wCoverCard">
+          <div class="mc-label">配息覆蓋率</div>
+          <div class="mc-val num" id="wCoverage">—</div>
+          <div class="mc-sub" id="wCoverageLabel">—</div>
+        </div>
+      </div>
+      <div id="wCoverMsg" style="font-size:12px;line-height:1.7;margin-top:14px;padding:12px;border-radius:var(--radius);background:var(--bg3)"></div>
+    </div>
+
+    <!-- 動態護欄 -->
+    <div class="form-box" style="border-color:rgba(240,168,50,.25)">
+      <div style="font-size:13px;font-weight:600;margin-bottom:6px"><i class="ti ti-arrow-guide" style="color:var(--amber)"></i> Guyton-Klinger 動態護欄（±20%）</div>
+      <p style="font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.7">市場大漲時可調升提領、大跌時需調降。以下為你目前提領率對應的護欄區間。</p>
+      <div class="metric-row" style="margin-bottom:0">
+        <div class="mc">
+          <div class="mc-label" style="color:var(--green)">上護欄（市場大跌時降到）</div>
+          <div class="mc-val num" id="wGuardLow" style="color:var(--green)">—</div>
+          <div class="mc-sub" id="wGuardLowRate">—</div>
+        </div>
+        <div class="mc">
+          <div class="mc-label">目前提領</div>
+          <div class="mc-val num" id="wGuardMid">—</div>
+          <div class="mc-sub" id="wGuardMidRate">—</div>
+        </div>
+        <div class="mc">
+          <div class="mc-label" style="color:var(--amber)">下護欄（市場大漲時升到）</div>
+          <div class="mc-val num" id="wGuardHigh" style="color:var(--amber)">—</div>
+          <div class="mc-sub" id="wGuardHighRate">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 反推所需本金 -->
+    <div class="form-box" style="border-color:rgba(167,139,250,.25);margin-bottom:0">
+      <div style="font-size:13px;font-weight:600;margin-bottom:12px"><i class="ti ti-calculator" style="color:var(--purple)"></i> 反推：要達成你的目標生活費，需要多少本金？</div>
+      <div class="metric-row" style="margin-bottom:0">
+        <div class="mc">
+          <div class="mc-label">用 4% 法則</div>
+          <div class="mc-val num" id="wNeed4" style="font-size:18px">—</div>
+          <div class="mc-sub">生活費 ÷ 4%</div>
+        </div>
+        <div class="mc">
+          <div class="mc-label">用目前提領率</div>
+          <div class="mc-val num" id="wNeedRate" style="font-size:18px">—</div>
+          <div class="mc-sub" id="wNeedRateLabel">—</div>
+        </div>
+        <div class="mc">
+          <div class="mc-label">純靠配息（不賣股）</div>
+          <div class="mc-val num" id="wNeedDiv" style="font-size:18px">—</div>
+          <div class="mc-sub">生活費 ÷ 殖利率</div>
+        </div>
+      </div>
+    </div>
   </div>
+
 
   <!-- ══ API 說明 ══ -->
   <div id="apiinfo" class="section">
@@ -867,6 +980,89 @@ function initRetire() {
   const el = document.getElementById('rInitial');
   if (!el.value) el.value = Math.round(holdings.reduce((s,h)=>s+h.shares*h.cost,0));
   updateSliders();
+  calcWithdraw();
+}
+
+// ════════════════════════════════════════════
+//  提領階段：4% 法則 + 動態護欄 + 配息覆蓋
+// ════════════════════════════════════════════
+function getWeightedYield() {
+  // 用目前持股市值（無現價則用成本）加權計算殖利率
+  let totalBase = 0, totalDiv = 0;
+  holdings.forEach(h => {
+    const base = h.price != null ? h.shares * h.price : h.shares * h.cost;
+    totalBase += base;
+    totalDiv += base * (h.yield || 0) / 100;
+  });
+  return totalBase > 0 ? totalDiv / totalBase * 100 : 0;
+}
+
+function setWRate(r) {
+  document.getElementById('wRate').value = r;
+  calcWithdraw();
+}
+
+function calcWithdraw() {
+  const principal = parseFloat(document.getElementById('wPrincipal').value) || 0;
+  const spend     = parseFloat(document.getElementById('wSpend').value) || 0;
+  const rate      = parseFloat(document.getElementById('wRate').value) || 4;
+  document.getElementById('wRateOut').textContent = rate.toFixed(1) + '%';
+
+  // ── 4% 法則：每年/每月可提領 ──
+  const annual = principal * rate / 100;
+  const monthly = annual / 12;
+  document.getElementById('wAnnual').textContent = '$' + fmt(annual);
+  document.getElementById('wMonthly').textContent = '$' + fmt(monthly);
+  document.getElementById('wRateLabel').textContent = '提領率 ' + rate.toFixed(1) + '%';
+
+  // ── vs 目標生活費 ──
+  const diff = annual - spend;
+  const vs = document.getElementById('wVsSpend');
+  vs.textContent = (diff >= 0 ? '+' : '') + '$' + fmt(diff);
+  vs.className = 'mc-val num ' + (diff >= 0 ? 'green' : 'red');
+  document.getElementById('wVsSpendLabel').textContent =
+    diff >= 0 ? '提領 > 生活費，有餘裕' : '提領 < 生活費，需提高提領率或本金';
+
+  // ── 配息覆蓋分析 ──
+  const wYield = getWeightedYield();
+  const divIncome = principal * wYield / 100;
+  const coverage = spend > 0 ? divIncome / spend * 100 : 0;
+  document.getElementById('wYield').textContent = fd(wYield) + '%';
+  document.getElementById('wDivIncome').textContent = '$' + fmt(divIncome);
+  document.getElementById('wCoverage').textContent = fd(coverage, 0) + '%';
+
+  const covCard = document.getElementById('wCoverCard');
+  const covLabel = document.getElementById('wCoverageLabel');
+  const covMsg = document.getElementById('wCoverMsg');
+  if (coverage >= 100) {
+    covCard.className = 'mc mc-accent';
+    covLabel.textContent = '配息完全覆蓋';
+    covMsg.innerHTML = `<b style="color:var(--green)"><i class="ti ti-circle-check"></i> 純配息就能養老。</b> 你的本金光靠配息每年產生 $${fmt(divIncome)}，已超過目標生活費 $${fmt(spend)}，<b>完全不需要賣股票</b>，本金可以原封不動傳承，多出的 $${fmt(divIncome - spend)} 還能繼續再投入或當緩衝。這是配息族最理想的狀態。`;
+  } else if (coverage >= 70) {
+    covCard.className = 'mc';
+    covLabel.textContent = '配息覆蓋大部分';
+    covMsg.innerHTML = `<b style="color:var(--amber)"><i class="ti ti-alert-triangle"></i> 配息覆蓋 ${fd(coverage,0)}%，差一點。</b> 配息每年提供 $${fmt(divIncome)}，缺口 $${fmt(spend - divIncome)} 需要靠賣一點股票或動用 4% 額度補足。缺口不大，遇到市場好的年份賣一點即可，風險可控。`;
+  } else {
+    covCard.className = 'mc';
+    covLabel.textContent = '配息覆蓋不足';
+    covMsg.innerHTML = `<b style="color:var(--red)"><i class="ti ti-circle-x"></i> 配息只覆蓋 ${fd(coverage,0)}%。</b> 配息每年 $${fmt(divIncome)}，缺口 $${fmt(spend - divIncome)} 較大，退休後需要規律賣股變現，會受市場波動影響。可考慮提高高息部位比重，或增加退休本金。`;
+  }
+
+  // ── Guyton-Klinger 動態護欄（±20%）──
+  const lowRate = rate * 0.8;   // 市場大跌時調降到
+  const highRate = rate * 1.2;  // 市場大漲時調升到
+  document.getElementById('wGuardLow').textContent = '$' + fmt(principal * lowRate / 100);
+  document.getElementById('wGuardLowRate').textContent = lowRate.toFixed(1) + '%';
+  document.getElementById('wGuardMid').textContent = '$' + fmt(annual);
+  document.getElementById('wGuardMidRate').textContent = rate.toFixed(1) + '%';
+  document.getElementById('wGuardHigh').textContent = '$' + fmt(principal * highRate / 100);
+  document.getElementById('wGuardHighRate').textContent = highRate.toFixed(1) + '%';
+
+  // ── 反推所需本金 ──
+  document.getElementById('wNeed4').textContent = '$' + fmt(spend / 0.04);
+  document.getElementById('wNeedRate').textContent = '$' + fmt(spend / (rate / 100));
+  document.getElementById('wNeedRateLabel').textContent = '生活費 ÷ ' + rate.toFixed(1) + '%';
+  document.getElementById('wNeedDiv').textContent = wYield > 0 ? '$' + fmt(spend / (wYield / 100)) : '—';
 }
 function updateSliders() {
   document.getElementById('rMonthlyOut').textContent = parseInt(document.getElementById('rMonthly').value).toLocaleString();

@@ -9,259 +9,202 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/1.119.0/iconfont/tabler-icons.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-  :root {
-    --bg: #0f1117;
-    --bg2: #161b27;
-    --bg3: #1e2536;
-    --border: rgba(255,255,255,0.08);
-    --border2: rgba(255,255,255,0.14);
-    --text: #e8eaf0;
-    --text2: #8b93a8;
-    --text3: #555e72;
-    --green: #22d39a;
-    --green-dim: rgba(34,211,154,0.12);
-    --green-mid: #1D9E75;
-    --red: #f05c6e;
-    --red-dim: rgba(240,92,110,0.12);
-    --blue: #4a9eff;
-    --blue-dim: rgba(74,158,255,0.12);
-    --amber: #f0a832;
-    --amber-dim: rgba(240,168,50,0.12);
-    --purple: #a78bfa;
-    --radius: 10px;
-    --radius-lg: 14px;
-    --mono: 'JetBrains Mono', monospace;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Inter', -apple-system, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    font-size: 14px;
-    line-height: 1.6;
-    min-height: 100vh;
-  }
+:root{
+  --bg:#0f1117;--bg2:#161b27;--bg3:#1e2536;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --text:#e8eaf0;--text2:#8b93a8;--text3:#555e72;
+  --green:#22d39a;--green-dim:rgba(34,211,154,0.12);--green-mid:#1D9E75;
+  --red:#f05c6e;--red-dim:rgba(240,92,110,0.12);
+  --blue:#4a9eff;--blue-dim:rgba(74,158,255,0.12);
+  --amber:#f0a832;--amber-dim:rgba(240,168,50,0.12);
+  --purple:#a78bfa;
+  --radius:10px;--radius-lg:14px;--mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
 
-  /* ── Header ── */
-  .header {
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 56px;
-    position: sticky;
-    top: 0;
-    background: rgba(15,17,23,0.92);
-    backdrop-filter: blur(12px);
-    z-index: 100;
-  }
-  .logo { font-weight: 600; font-size: 15px; letter-spacing: -0.3px; }
-  .logo span { color: var(--green); }
-  .header-right { display: flex; align-items: center; gap: 12px; }
-  .last-update { font-size: 12px; color: var(--text3); font-family: var(--mono); }
+/* header */
+.header{border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;background:rgba(15,17,23,0.93);backdrop-filter:blur(12px);z-index:100}
+.logo{font-weight:600;font-size:15px;letter-spacing:-.3px}.logo span{color:var(--green)}
+.header-right{display:flex;align-items:center;gap:12px}
+.last-update{font-size:12px;color:var(--text3);font-family:var(--mono)}
+.lock-badge{display:flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--border2);color:var(--text3)}
+.lock-badge.locked{color:var(--green);border-color:rgba(34,211,154,0.3);background:var(--green-dim)}
 
-  /* ── Layout ── */
-  .container { max-width: 1280px; margin: 0 auto; padding: 2rem; }
+/* layout */
+.container{max-width:1280px;margin:0 auto;padding:2rem}
 
-  /* ── Tabs ── */
-  .tab-bar {
-    display: flex; gap: 2px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 2rem;
-  }
-  .tab {
-    padding: 10px 18px; font-size: 13px; font-weight: 500;
-    cursor: pointer; border: none; background: none;
-    color: var(--text2); border-radius: var(--radius) var(--radius) 0 0;
-    transition: color 0.15s, background 0.15s;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .tab:hover { color: var(--text); background: var(--bg3); }
-  .tab.active { color: var(--green); border-bottom: 2px solid var(--green); background: rgba(34,211,154,0.06); }
-  .section { display: none; }
-  .section.active { display: block; }
+/* tabs */
+.tab-bar{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:2rem}
+.tab{padding:10px 18px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--text2);border-radius:var(--radius) var(--radius) 0 0;transition:color .15s,background .15s;display:flex;align-items:center;gap:6px}
+.tab:hover{color:var(--text);background:var(--bg3)}
+.tab.active{color:var(--green);border-bottom:2px solid var(--green);background:rgba(34,211,154,0.06)}
+.section{display:none}.section.active{display:block}
 
-  /* ── Metric cards ── */
-  .metric-row { display: flex; gap: 12px; margin-bottom: 2rem; flex-wrap: wrap; }
-  .mc {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); padding: 1.1rem 1.25rem;
-    flex: 1; min-width: 130px;
-  }
-  .mc-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-  .mc-val { font-size: 22px; font-weight: 600; font-family: var(--mono); }
-  .mc-sub { font-size: 11px; color: var(--text3); margin-top: 3px; }
-  .mc-accent { border-color: var(--green); background: var(--green-dim); }
-  .mc-accent .mc-val { color: var(--green); }
+/* metric cards */
+.metric-row{display:flex;gap:12px;margin-bottom:2rem;flex-wrap:wrap}
+.mc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.1rem 1.25rem;flex:1;min-width:130px}
+.mc-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.mc-val{font-size:22px;font-weight:600;font-family:var(--mono)}
+.mc-sub{font-size:11px;color:var(--text3);margin-top:3px}
+.mc-accent{border-color:var(--green);background:var(--green-dim)}.mc-accent .mc-val{color:var(--green)}
 
-  /* ── Status bar ── */
-  .sb {
-    font-size: 12px; padding: 10px 14px; border-radius: var(--radius);
-    margin-bottom: 1.25rem; display: none; align-items: center; gap: 8px;
-    border: 1px solid transparent;
-  }
-  .sb.show { display: flex; }
-  .sb-ok  { background: var(--green-dim); color: var(--green); border-color: rgba(34,211,154,0.25); }
-  .sb-err { background: var(--red-dim);   color: var(--red);   border-color: rgba(240,92,110,0.25); }
-  .sb-info{ background: var(--blue-dim);  color: var(--blue);  border-color: rgba(74,158,255,0.25); }
-  .sb-warn{ background: var(--amber-dim); color: var(--amber); border-color: rgba(240,168,50,0.25); }
+/* status */
+.sb{font-size:12px;padding:10px 14px;border-radius:var(--radius);margin-bottom:1.25rem;display:none;align-items:center;gap:8px;border:1px solid transparent}
+.sb.show{display:flex}
+.sb-ok{background:var(--green-dim);color:var(--green);border-color:rgba(34,211,154,.25)}
+.sb-err{background:var(--red-dim);color:var(--red);border-color:rgba(240,92,110,.25)}
+.sb-info{background:var(--blue-dim);color:var(--blue);border-color:rgba(74,158,255,.25)}
+.sb-warn{background:var(--amber-dim);color:var(--amber);border-color:rgba(240,168,50,.25)}
 
-  /* ── Progress ── */
-  .progress-wrap { margin-bottom: 1.25rem; display: none; }
-  .progress-label { font-size: 12px; color: var(--text2); margin-bottom: 6px; }
-  .progress-track { height: 3px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
-  .progress-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.3s; }
+/* progress */
+.progress-wrap{margin-bottom:1.25rem;display:none}
+.progress-label{font-size:12px;color:var(--text2);margin-bottom:6px}
+.progress-track{height:3px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:var(--green);border-radius:2px;transition:width .3s}
 
-  /* ── Section header ── */
-  .section-hd {
-    display: flex; justify-content: space-between; align-items: flex-end;
-    margin-bottom: 1rem; flex-wrap: wrap; gap: 10px;
-  }
-  .section-hd h2 { font-size: 15px; font-weight: 600; }
-  .api-legend { display: flex; gap: 10px; flex-wrap: wrap; }
-  .legend-item { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 4px; }
+/* section header */
+.section-hd{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:1rem;flex-wrap:wrap;gap:10px}
+.section-hd h2{font-size:15px;font-weight:600}
+.api-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.legend-item{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px}
 
-  /* ── Table ── */
-  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th {
-    font-size: 10px; font-weight: 500; color: var(--text3);
-    text-transform: uppercase; letter-spacing: 0.5px;
-    padding: 10px 12px; text-align: left;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg2); white-space: nowrap;
-  }
-  td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(255,255,255,0.02); }
-  .num { font-family: var(--mono); font-size: 12px; }
-  .green { color: var(--green); }
-  .red { color: var(--red); }
-  .dim { color: var(--text3); }
+/* table */
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius-lg)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);background:var(--bg2);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.num{font-family:var(--mono);font-size:12px}
+.green{color:var(--green)}.red{color:var(--red)}.dim{color:var(--text3)}
 
-  /* ── Tags ── */
-  .tag {
-    display: inline-block; font-size: 10px; padding: 2px 7px;
-    border-radius: 20px; font-weight: 500; white-space: nowrap;
-  }
-  .tag-tse    { background: rgba(34,211,154,0.12); color: var(--green); }
-  .tag-tpex   { background: var(--blue-dim); color: var(--blue); }
-  .tag-manual { background: rgba(255,255,255,0.06); color: var(--text3); }
-  .tag-etf    { background: rgba(167,139,250,0.12); color: var(--purple); }
-  .tag-stock  { background: rgba(240,168,50,0.12); color: var(--amber); }
+/* tags */
+.tag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap}
+.tag-tse{background:rgba(34,211,154,.12);color:var(--green)}
+.tag-tpex{background:var(--blue-dim);color:var(--blue)}
+.tag-manual{background:rgba(255,255,255,.06);color:var(--text3)}
+.tag-etf{background:rgba(167,139,250,.12);color:var(--purple)}
+.tag-stock{background:var(--amber-dim);color:var(--amber)}
 
-  /* ── Yield cell ── */
-  .yield-stack { display: flex; flex-direction: column; gap: 2px; }
-  .yield-row { display: flex; align-items: center; gap: 5px; font-family: var(--mono); font-size: 12px; }
+/* yield */
+.yield-stack{display:flex;flex-direction:column;gap:2px}
+.yield-row{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:12px}
 
-  /* ── Buttons ── */
-  .btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 7px 14px; border-radius: var(--radius);
-    font-size: 13px; font-weight: 500; cursor: pointer;
-    border: 1px solid var(--border2); background: var(--bg3);
-    color: var(--text); transition: all 0.15s;
-  }
-  .btn:hover { border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.07); }
-  .btn:active { transform: scale(0.97); }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-  .btn-primary { background: var(--green-mid); border-color: var(--green-mid); color: #fff; }
-  .btn-primary:hover { background: #19b585; border-color: #19b585; }
-  .btn-sm { padding: 4px 8px; font-size: 12px; }
-  .btn-danger { border-color: rgba(240,92,110,0.4); color: var(--red); }
-  .btn-danger:hover { background: var(--red-dim); }
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text);transition:all .15s;font-family:'Inter',sans-serif}
+.btn:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.07)}
+.btn:active{transform:scale(.97)}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-primary{background:var(--green-mid);border-color:var(--green-mid);color:#fff}
+.btn-primary:hover{background:#19b585;border-color:#19b585}
+.btn-sm{padding:4px 8px;font-size:12px}
+.btn-danger{border-color:rgba(240,92,110,.4);color:var(--red)}.btn-danger:hover{background:var(--red-dim)}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
 
-  /* ── Charts ── */
-  .chart-row { display: flex; gap: 16px; margin-top: 2rem; flex-wrap: wrap; }
-  .chart-box {
-    flex: 1; min-width: 220px;
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); padding: 1.25rem;
-  }
-  .chart-title { font-size: 12px; color: var(--text2); margin-bottom: 1rem; font-weight: 500; }
-  .chart-canvas { position: relative; height: 180px; }
+/* charts */
+.chart-row{display:flex;gap:16px;margin-top:2rem;flex-wrap:wrap}
+.chart-box{flex:1;min-width:220px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem}
+.chart-title{font-size:12px;color:var(--text2);margin-bottom:1rem;font-weight:500}
+.chart-canvas{position:relative;height:180px}
 
-  /* ── Form ── */
-  .form-box {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); padding: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-  .form-grid { display: grid; gap: 12px; margin-bottom: 12px; }
-  .g2 { grid-template-columns: 1fr 1fr; }
-  .g3 { grid-template-columns: 1fr 1fr 1fr; }
-  .g4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
-  .form-label { font-size: 11px; color: var(--text3); margin-bottom: 5px; display: block; text-transform: uppercase; letter-spacing: 0.4px; }
-  input, select {
-    width: 100%; font-family: 'Inter', sans-serif; font-size: 13px;
-    color: var(--text); background: var(--bg3);
-    border: 1px solid var(--border2); border-radius: var(--radius);
-    padding: 8px 10px; outline: none; transition: border-color 0.15s;
-  }
-  input::placeholder { color: var(--text3); }
-  input:focus, select:focus { border-color: var(--green); }
-  select option { background: var(--bg3); }
-  .form-actions { display: flex; gap: 8px; margin-top: 4px; }
+/* form */
+.form-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1.5rem}
+.form-grid{display:grid;gap:12px;margin-bottom:12px}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}.g4{grid-template-columns:1fr 1fr 1fr 1fr}
+.form-label{font-size:11px;color:var(--text3);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:.4px}
+input,select{width:100%;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:8px 10px;outline:none;transition:border-color .15s}
+input::placeholder{color:var(--text3)}
+input:focus,select:focus{border-color:var(--green)}
+select option{background:var(--bg3)}
 
-  /* ── Divider ── */
-  .divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+/* divider */
+.divider{border:none;border-top:1px solid var(--border);margin:2rem 0}
 
-  /* ── Retire section ── */
-  .slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-  .slider-label { font-size: 13px; color: var(--text2); width: 180px; flex-shrink: 0; }
-  .slider-val { font-size: 13px; font-weight: 500; font-family: var(--mono); min-width: 80px; text-align: right; color: var(--text); }
-  input[type=range] {
-    flex: 1; -webkit-appearance: none; appearance: none;
-    height: 3px; background: var(--bg3); border-radius: 2px;
-    border: none; padding: 0; outline: none;
-    accent-color: var(--green);
-  }
-  input[type=range]:focus { border: none; }
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none; width: 16px; height: 16px;
-    border-radius: 50%; background: var(--green); cursor: pointer;
-    border: 2px solid var(--bg);
-  }
-  .retire-result {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); padding: 1.5rem; margin-top: 1.5rem;
-    display: none;
-  }
-  .retire-big { font-size: 36px; font-weight: 600; color: var(--green); font-family: var(--mono); margin: 8px 0 1.5rem; }
+/* sliders */
+.slider-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.slider-label{font-size:13px;color:var(--text2);width:180px;flex-shrink:0}
+.slider-val{font-size:13px;font-weight:500;font-family:var(--mono);min-width:80px;text-align:right;color:var(--text)}
+input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:3px;background:var(--bg3);border-radius:2px;border:none;padding:0;outline:none;accent-color:var(--green)}
+input[type=range]:focus{border:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--green);cursor:pointer;border:2px solid var(--bg)}
 
-  /* ── API info ── */
-  .api-card {
-    border: 1px solid var(--border); border-radius: var(--radius-lg);
-    padding: 1.25rem; margin-bottom: 12px;
-  }
-  .api-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .api-card-title { font-size: 14px; font-weight: 500; }
-  .api-url {
-    font-family: var(--mono); font-size: 11px; color: var(--text3);
-    background: var(--bg3); padding: 8px 12px; border-radius: 6px;
-    margin-bottom: 8px; word-break: break-all; line-height: 1.8;
-  }
-  .api-note { font-size: 12px; color: var(--text2); line-height: 1.7; }
-  .api-note b { color: var(--text); font-weight: 500; }
+/* retire */
+.retire-result{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-top:1.5rem;display:none}
+.retire-big{font-size:36px;font-weight:600;color:var(--green);font-family:var(--mono);margin:8px 0 1.5rem}
 
-  /* ── Responsive ── */
-  @media (max-width: 640px) {
-    .container { padding: 1rem; }
-    .header { padding: 0 1rem; }
-    .g3, .g4 { grid-template-columns: 1fr 1fr; }
-    .g2 { grid-template-columns: 1fr; }
-    .metric-row { gap: 8px; }
-    .mc { min-width: 140px; }
-  }
+/* api card */
+.api-card{border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:12px}
+.api-card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.api-card-title{font-size:14px;font-weight:500}
+.api-url{font-family:var(--mono);font-size:11px;color:var(--text3);background:var(--bg3);padding:8px 12px;border-radius:6px;margin-bottom:8px;word-break:break-all;line-height:1.8}
+.api-note{font-size:12px;color:var(--text2);line-height:1.7}
+.api-note b{color:var(--text);font-weight:500}
+
+/* ── Lock overlay ── */
+.lock-overlay{position:fixed;inset:0;background:rgba(10,12,18,0.97);display:flex;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(8px)}
+.lock-box{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:2.5rem 2rem;width:340px;text-align:center}
+.lock-icon{font-size:40px;color:var(--green);margin-bottom:1rem}
+.lock-title{font-size:18px;font-weight:600;margin-bottom:6px}
+.lock-sub{font-size:13px;color:var(--text3);margin-bottom:1.5rem;line-height:1.6}
+.lock-input{width:100%;font-size:16px;text-align:center;letter-spacing:4px;margin-bottom:1rem;padding:10px}
+.lock-err{font-size:12px;color:var(--red);margin-top:8px;min-height:18px}
+
+/* save modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9000;display:none}
+.modal-bg.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:2rem;width:min(90vw,520px)}
+.modal h3{font-size:15px;font-weight:600;margin-bottom:1rem}
+.modal-url{font-family:var(--mono);font-size:11px;word-break:break-all;background:var(--bg3);padding:10px 12px;border-radius:var(--radius);color:var(--text2);line-height:1.7;margin-bottom:1rem;max-height:120px;overflow-y:auto}
+.modal-note{font-size:12px;color:var(--text3);line-height:1.7;margin-bottom:1.25rem}
+
+@media(max-width:640px){
+  .container{padding:1rem}.header{padding:0 1rem}
+  .g3,.g4{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}
+  .metric-row{gap:8px}.mc{min-width:140px}
+}
 </style>
 </head>
 <body>
+
+<!-- ══ Lock overlay ══ -->
+<div class="lock-overlay" id="lockOverlay">
+  <div class="lock-box">
+    <div class="lock-icon"><i class="ti ti-shield-lock"></i></div>
+    <div class="lock-title" id="lockTitle">輸入密碼</div>
+    <div class="lock-sub" id="lockSub">請輸入你設定的密碼來解鎖持股資料</div>
+    <input class="lock-input" type="password" id="lockInput" placeholder="••••••••" autocomplete="current-password">
+    <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:14px" onclick="handleLock()" id="lockBtn">解鎖</button>
+    <div class="lock-err" id="lockErr"></div>
+    <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border)">
+      <button class="btn" style="width:100%;justify-content:center;font-size:12px;color:var(--text3)" onclick="startFresh()">
+        <i class="ti ti-plus"></i> 沒有資料，從頭開始（設定新密碼）
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Save modal ══ -->
+<div class="modal-bg" id="saveModal">
+  <div class="modal">
+    <h3><i class="ti ti-bookmark" style="color:var(--green)"></i> 儲存書籤 URL</h3>
+    <div class="modal-note">你的持股資料已加密並編碼進以下網址。<b>請複製這個網址存為書籤</b>，下次從任何裝置開啟這個 URL 並輸入密碼即可還原。</div>
+    <div class="modal-url" id="savedUrl"></div>
+    <div class="modal-note" style="color:var(--red)">
+      <i class="ti ti-alert-triangle"></i> 重要：網址不會自動儲存，請務必複製後存為書籤。
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="copyUrl()"><i class="ti ti-copy"></i> 複製網址</button>
+      <button class="btn" onclick="document.getElementById('saveModal').classList.remove('show')">關閉</button>
+    </div>
+    <div id="copyConfirm" style="font-size:12px;color:var(--green);margin-top:8px;display:none"><i class="ti ti-check"></i> 已複製到剪貼簿</div>
+  </div>
+</div>
 
 <header class="header">
   <div class="logo">Harry <span>Portfolio</span></div>
   <div class="header-right">
     <span class="last-update" id="headerUpdate">尚未更新</span>
+    <span class="lock-badge locked" id="lockBadge"><i class="ti ti-lock"></i> 已加密</span>
   </div>
 </header>
 
@@ -292,43 +235,33 @@
     <div class="section-hd">
       <div>
         <h2>持股明細</h2>
-        <div class="api-legend" style="margin-top:6px">
-          <span class="legend-item"><span class="tag tag-tse">TWSE</span> 上市 · openapi.twse.com.tw</span>
-          <span class="legend-item"><span class="tag tag-tpex">TPEx</span> 上櫃 · tpex.org.tw/openapi</span>
-          <span class="legend-item"><span class="tag tag-manual">自填</span> 手動輸入</span>
+        <div class="api-legend">
+          <span class="legend-item"><span class="tag tag-tse">TWSE</span> 上市</span>
+          <span class="legend-item"><span class="tag tag-tpex">TPEx</span> 上櫃</span>
+          <span class="legend-item"><span class="tag tag-manual">自填</span> 手動殖利率</span>
         </div>
       </div>
-      <button class="btn btn-primary" onclick="fetchAll()" id="fetchBtn">
-        <i class="ti ti-refresh"></i> 更新盤後資料
-      </button>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="fetchAll()" id="fetchBtn"><i class="ti ti-refresh"></i> 更新盤後資料</button>
+        <button class="btn" onclick="openSaveModal()" style="color:var(--green);border-color:rgba(34,211,154,.3)"><i class="ti ti-bookmark"></i> 儲存書籤</button>
+      </div>
     </div>
 
     <div class="table-wrap">
       <table>
-        <thead>
-          <tr>
-            <th>代號</th><th>名稱</th><th>類型</th><th>市場</th>
-            <th>持股</th><th>成本</th><th>現價</th><th>市值</th>
-            <th>損益</th><th>損益%</th><th>殖利率</th><th>年配息</th><th>更新</th>
-          </tr>
-        </thead>
+        <thead><tr>
+          <th>代號</th><th>名稱</th><th>類型</th><th>市場</th>
+          <th>持股</th><th>成本</th><th>現價</th><th>市值</th>
+          <th>損益</th><th>損益%</th><th>殖利率</th><th>年配息</th><th>更新</th>
+        </tr></thead>
         <tbody id="portfolioBody"></tbody>
       </table>
     </div>
 
     <div class="chart-row">
-      <div class="chart-box">
-        <div class="chart-title">市值佔比</div>
-        <div class="chart-canvas"><canvas id="pieChart" role="img" aria-label="持股市值分布圓餅圖"></canvas></div>
-      </div>
-      <div class="chart-box">
-        <div class="chart-title">未實現損益</div>
-        <div class="chart-canvas"><canvas id="pnlChart" role="img" aria-label="各標的未實現損益"></canvas></div>
-      </div>
-      <div class="chart-box">
-        <div class="chart-title">預估年配息</div>
-        <div class="chart-canvas"><canvas id="divChart" role="img" aria-label="各標的年配息金額"></canvas></div>
-      </div>
+      <div class="chart-box"><div class="chart-title">市值佔比</div><div class="chart-canvas"><canvas id="pieChart" role="img" aria-label="持股市值分布"></canvas></div></div>
+      <div class="chart-box"><div class="chart-title">未實現損益</div><div class="chart-canvas"><canvas id="pnlChart" role="img" aria-label="各標的損益"></canvas></div></div>
+      <div class="chart-box"><div class="chart-title">預估年配息</div><div class="chart-canvas"><canvas id="divChart" role="img" aria-label="各標的配息"></canvas></div></div>
     </div>
   </div>
 
@@ -339,8 +272,7 @@
       <div class="form-grid g3">
         <div><label class="form-label">股票代號 *</label><input id="fCode" placeholder="如 0050、00772B" maxlength="8"></div>
         <div><label class="form-label">名稱 *</label><input id="fName" placeholder="如 元大台灣50"></div>
-        <div>
-          <label class="form-label">市場</label>
+        <div><label class="form-label">市場</label>
           <select id="fType">
             <option value="tse-etf">上市 ETF（TWSE）</option>
             <option value="tpex-etf">上櫃 ETF（TPEx）</option>
@@ -351,10 +283,9 @@
       </div>
       <div class="form-grid g4">
         <div><label class="form-label">持有股數 *</label><input id="fShares" type="number" placeholder="股數"></div>
-        <div><label class="form-label">平均成本 (元) *</label><input id="fCost" type="number" step="0.01" placeholder="買入均價"></div>
+        <div><label class="form-label">平均成本 (元) *</label><input id="fCost" type="number" step="0.01"></div>
         <div><label class="form-label">自填年殖利率 (%)</label><input id="fYield" type="number" step="0.1" placeholder="如 5.0"></div>
-        <div>
-          <label class="form-label">配息頻率</label>
+        <div><label class="form-label">配息頻率</label>
           <select id="fFreq">
             <option value="monthly">月配</option>
             <option value="quarterly">季配</option>
@@ -364,15 +295,14 @@
         </div>
       </div>
       <div class="form-grid g2" style="margin-bottom:0">
-        <div><label class="form-label">備註</label><input id="fNote" placeholder="策略說明，如：每月定額 12,000"></div>
+        <div><label class="form-label">備註</label><input id="fNote" placeholder="策略說明"></div>
       </div>
-      <div class="form-actions" style="margin-top:14px">
+      <div class="btn-row" style="margin-top:14px">
         <button class="btn btn-primary" onclick="addOrUpdate()"><i class="ti ti-check"></i> 儲存</button>
         <button class="btn" onclick="clearForm()">清除</button>
       </div>
       <div id="formStatus" style="font-size:12px;color:var(--text3);margin-top:8px;display:none"></div>
     </div>
-
     <h2 style="margin-bottom:1rem;font-size:15px;font-weight:600">目前持股清單</h2>
     <div class="table-wrap">
       <table>
@@ -405,13 +335,10 @@
         <input type="range" min="0" max="100" step="10" value="100" id="rReinvest" oninput="updateSliders()">
         <span class="slider-val" id="rReinvestOut">100%</span>
       </div>
-      <button class="btn btn-primary" onclick="calcRetire()" style="margin-top:8px">
-        <i class="ti ti-calculator"></i> 計算退休年限
-      </button>
+      <button class="btn btn-primary" onclick="calcRetire()" style="margin-top:8px"><i class="ti ti-calculator"></i> 計算退休年限</button>
     </div>
-
     <div class="retire-result" id="retireResult">
-      <div style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px">預計達標年數</div>
+      <div style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">預計達標年數</div>
       <div class="retire-big" id="retireYears">—</div>
       <div class="metric-row" style="margin-bottom:1.5rem">
         <div class="mc"><div class="mc-label">起始資產</div><div class="mc-val num" style="font-size:16px" id="rResInit">—</div></div>
@@ -425,87 +352,162 @@
 
   <!-- ══ API 說明 ══ -->
   <div id="apiinfo" class="section">
-    <h2 style="margin-bottom:1.25rem;font-size:15px;font-weight:600">API 資料來源說明</h2>
-
-    <div class="api-card" style="border-color:rgba(34,211,154,0.25)">
-      <div class="api-card-header">
-        <span class="tag tag-tse">TWSE 上市</span>
-        <span class="api-card-title">台灣證券交易所 OpenAPI</span>
-      </div>
-      <div class="api-url">
-        收盤價：https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_AVG_ALL<br>
-        殖利率：https://openapi.twse.com.tw/v1/exchangeReport/BWIBBU_d
-      </div>
-      <div class="api-note">
-        適用 4~5 碼上市代號（0050、00878、00713 等）。<br>
-        <b>更新時間：</b>前一個交易日的盤後資料，通常隔天凌晨更新完成。免費，無需 API Key。
-      </div>
+    <h2 style="margin-bottom:1.25rem;font-size:15px;font-weight:600">API 資料來源 &amp; 加密說明</h2>
+    <div class="api-card" style="border-color:rgba(34,211,154,.25)">
+      <div class="api-card-header"><span class="tag tag-tse">TWSE 上市</span><span class="api-card-title">台灣證券交易所 OpenAPI</span></div>
+      <div class="api-url">收盤價：https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_AVG_ALL<br>殖利率：https://openapi.twse.com.tw/v1/exchangeReport/BWIBBU_d</div>
+      <div class="api-note">適用 4~5 碼上市代號。<b>更新時間：</b>前一交易日盤後，通常隔天凌晨更新完成。免費，無需 API Key。</div>
     </div>
-
-    <div class="api-card" style="border-color:rgba(74,158,255,0.25)">
-      <div class="api-card-header">
-        <span class="tag tag-tpex">TPEx 上櫃</span>
-        <span class="api-card-title">證券櫃檯買賣中心 OpenAPI</span>
-      </div>
-      <div class="api-url">
-        收盤價：https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes
-      </div>
-      <div class="api-note">
-        適用帶英文字母的 6 碼代號（00772B、00400A 等上櫃 ETF）。<br>
-        <b>更新時間：</b>當日盤後，帶民國日期參數（自動帶入）。免費，無需 API Key。
-      </div>
+    <div class="api-card" style="border-color:rgba(74,158,255,.25)">
+      <div class="api-card-header"><span class="tag tag-tpex">TPEx 上櫃</span><span class="api-card-title">證券櫃檯買賣中心 OpenAPI</span></div>
+      <div class="api-url">收盤價：https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes</div>
+      <div class="api-note">適用帶英文字母的 6 碼代號（00772B、00400A）。免費，無需 API Key。</div>
     </div>
-
-    <div class="api-card">
-      <div class="api-card-header">
-        <span class="tag tag-manual">殖利率說明</span>
-      </div>
+    <div class="api-card" style="border-color:rgba(167,139,250,.3)">
+      <div class="api-card-header"><span class="tag tag-etf" style="background:rgba(167,139,250,.15)"><i class="ti ti-lock"></i> 加密方式</span><span class="api-card-title">AES-GCM 256-bit（瀏覽器原生）</span></div>
       <div class="api-note">
-        <b>官方殖利率</b>（TWSE BWIBBU_d）= 近一年股利 ÷ 收盤價，僅適用上市股。月配型 ETF 若配息不足 12 次則偏低。<br><br>
-        <b>自填殖利率建議做法：</b>去各 ETF 官網查最近 12 個月配息加總，手動除以現價計算，最準確。<br><br>
-        <b>CORS 說明：</b>這個工具以本機 HTML 或 GitHub Pages 開啟時可正常呼叫 API。若嵌在其他網頁（如 claude.ai）中則因瀏覽器跨域限制可能無法抓取。
+        <b>原理：</b>你的持股資料在按下「儲存書籤」時，以你輸入的密碼透過 PBKDF2 衍生金鑰，用 AES-GCM 256-bit 加密，編碼為 Base64 後附加在 URL 的 # 後面。<br><br>
+        <b>URL Hash 的特性：</b># 後面的內容瀏覽器不會傳給伺服器，因此 GitHub 完全看不到你的任何資料。<br><br>
+        <b>安全說明：</b>密碼只存在你的記憶中，加密在本地完成，沒有任何資料上傳。就算有人拿到你的 URL，沒有密碼也無法解密。
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// ════════════════════════════════
-//  資料
-// ════════════════════════════════
-const STORAGE_KEY = 'harry_portfolio_v1';
+// ════════════════════════════════════════════
+//  AES-GCM 加密 / 解密
+// ════════════════════════════════════════════
+const SALT = new Uint8Array([72,97,114,114,121,80,111,114,116,102,111,108,105,111,50,48,50,54]);
 
-let holdings = loadHoldings();
-let pieCI = null, pnlCI = null, divCI = null, retireCI = null;
+async function deriveKey(password) {
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    { name:'PBKDF2', salt:SALT, iterations:200000, hash:'SHA-256' },
+    keyMaterial, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']
+  );
+}
+
+async function encrypt(data, password) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await deriveKey(password);
+  const enc = new TextEncoder();
+  const ct = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, key, enc.encode(JSON.stringify(data)));
+  const buf = new Uint8Array(iv.length + ct.byteLength);
+  buf.set(iv); buf.set(new Uint8Array(ct), iv.length);
+  return btoa(String.fromCharCode(...buf));
+}
+
+async function decrypt(b64, password) {
+  const buf = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  const iv = buf.slice(0, 12);
+  const ct = buf.slice(12);
+  const key = await deriveKey(password);
+  const pt = await crypto.subtle.decrypt({ name:'AES-GCM', iv }, key, ct);
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+
+// ════════════════════════════════════════════
+//  狀態
+// ════════════════════════════════════════════
+let holdings = [];
+let currentPassword = null;
+let pieCI=null, pnlCI=null, divCI=null, retireCI=null;
 let editIdx = -1;
 
 function defaultHoldings() {
   return [
-    { code:'0050',   name:'元大台灣50',        type:'tse-etf',  shares:16895, cost:41.11, yield:3.5, freq:'quarterly',  price:null, officialYield:null, lastUpdate:null, note:'核心主力，每月定額 12,000' },
-    { code:'00878',  name:'國泰永續高股息',      type:'tse-etf',  shares:34100, cost:17.76, yield:7.2, freq:'monthly',    price:null, officialYield:null, lastUpdate:null, note:'停止加碼，配息轉投 00400A' },
-    { code:'00772B', name:'中信高評級公司債',    type:'tpex-etf', shares:4084,  cost:31.98, yield:4.1, freq:'monthly',    price:null, officialYield:null, lastUpdate:null, note:'防禦型，月配轉投 00400A' },
-    { code:'00400A', name:'國泰動能高息主動式',  type:'tpex-etf', shares:7000,  cost:13.45, yield:5.5, freq:'monthly',    price:null, officialYield:null, lastUpdate:null, note:'主動式 Alpha，建倉 70%' },
-    { code:'00713',  name:'元大台灣高息低波',    type:'tse-etf',  shares:1384,  cost:52.28, yield:4.8, freq:'quarterly',  price:null, officialYield:null, lastUpdate:null, note:'防禦配置' }
+    {code:'0050',  name:'元大台灣50',       type:'tse-etf', shares:16895,cost:41.11,yield:3.5,freq:'quarterly',price:null,officialYield:null,lastUpdate:null,note:'核心主力，每月定額 12,000'},
+    {code:'00878', name:'國泰永續高股息',    type:'tse-etf', shares:34100,cost:17.76,yield:7.2,freq:'monthly',  price:null,officialYield:null,lastUpdate:null,note:'停止加碼，配息轉投 00400A'},
+    {code:'00772B',name:'中信高評級公司債',  type:'tpex-etf',shares:4084, cost:31.98,yield:4.1,freq:'monthly',  price:null,officialYield:null,lastUpdate:null,note:'防禦型，月配轉投 00400A'},
+    {code:'00400A',name:'國泰動能高息主動式',type:'tpex-etf',shares:7000, cost:13.45,yield:5.5,freq:'monthly',  price:null,officialYield:null,lastUpdate:null,note:'主動式 Alpha，建倉 70%'},
+    {code:'00713', name:'元大台灣高息低波',  type:'tse-etf', shares:1384, cost:52.28,yield:4.8,freq:'quarterly',price:null,officialYield:null,lastUpdate:null,note:'防禦配置'}
   ];
 }
 
-function loadHoldings() {
-  try {
-    const d = localStorage.getItem(STORAGE_KEY);
-    return d ? JSON.parse(d) : defaultHoldings();
-  } catch { return defaultHoldings(); }
+// ════════════════════════════════════════════
+//  鎖畫面邏輯
+// ════════════════════════════════════════════
+const hash = location.hash.slice(1);
+const hasData = hash.length > 20;
+
+if (!hasData) {
+  // 沒有 hash 資料：顯示「設定新密碼」模式
+  document.getElementById('lockTitle').textContent = '設定密碼';
+  document.getElementById('lockSub').textContent = '這是你第一次使用。設定一個密碼來保護你的持股資料，日後每次開啟都需要輸入。';
+  document.getElementById('lockBtn').textContent = '設定並開始';
+  document.querySelector('.lock-box > button:last-child').style.display = 'none';
 }
 
-function save() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(holdings));
+document.getElementById('lockInput').addEventListener('keydown', e => { if (e.key === 'Enter') handleLock(); });
+
+async function handleLock() {
+  const pw = document.getElementById('lockInput').value;
+  if (pw.length < 4) { document.getElementById('lockErr').textContent = '密碼至少 4 個字元'; return; }
+  document.getElementById('lockBtn').disabled = true;
+  document.getElementById('lockBtn').textContent = '處理中...';
+
+  if (!hasData) {
+    // 新設定：直接用預設資料
+    currentPassword = pw;
+    holdings = defaultHoldings();
+    document.getElementById('lockOverlay').style.display = 'none';
+    renderPortfolio();
+    // 立刻讓他存一次書籤
+    setTimeout(() => openSaveModal(), 400);
+  } else {
+    try {
+      holdings = await decrypt(hash, pw);
+      currentPassword = pw;
+      document.getElementById('lockOverlay').style.display = 'none';
+      renderPortfolio();
+    } catch {
+      document.getElementById('lockErr').textContent = '密碼錯誤，請再試一次';
+      document.getElementById('lockBtn').disabled = false;
+      document.getElementById('lockBtn').textContent = '解鎖';
+      document.getElementById('lockInput').value = '';
+      document.getElementById('lockInput').focus();
+    }
+  }
 }
 
-// ════════════════════════════════
+function startFresh() {
+  location.hash = '';
+  document.getElementById('lockTitle').textContent = '設定密碼';
+  document.getElementById('lockSub').textContent = '設定一個密碼來保護你的持股資料。';
+  document.getElementById('lockBtn').textContent = '設定並開始';
+  document.querySelector('.lock-box > button:last-child').style.display = 'none';
+  document.getElementById('lockInput').value = '';
+  document.getElementById('lockErr').textContent = '';
+}
+
+// ════════════════════════════════════════════
+//  儲存書籤
+// ════════════════════════════════════════════
+async function openSaveModal() {
+  if (!currentPassword) return;
+  const encrypted = await encrypt(holdings, currentPassword);
+  const url = location.origin + location.pathname + '#' + encrypted;
+  document.getElementById('savedUrl').textContent = url;
+  location.hash = encrypted;  // 同步更新當前 hash
+  document.getElementById('saveModal').classList.add('show');
+  document.getElementById('copyConfirm').style.display = 'none';
+}
+
+async function copyUrl() {
+  const url = document.getElementById('savedUrl').textContent;
+  await navigator.clipboard.writeText(url);
+  document.getElementById('copyConfirm').style.display = 'block';
+  setTimeout(() => { document.getElementById('copyConfirm').style.display = 'none'; }, 3000);
+}
+
+// ════════════════════════════════════════════
 //  格式化
-// ════════════════════════════════
-const fmt  = n => n == null ? '—' : Math.round(n).toLocaleString();
-const fd   = (n, d=2) => n == null ? '—' : parseFloat(n).toFixed(d);
-const freq = { monthly:'月配', quarterly:'季配', semiannual:'半配', annual:'年配' };
+// ════════════════════════════════════════════
+const fmt = n => n==null ? '—' : Math.round(n).toLocaleString();
+const fd  = (n,d=2) => n==null ? '—' : parseFloat(n).toFixed(d);
+const freqMap = {monthly:'月配',quarterly:'季配',semiannual:'半配',annual:'年配'};
 
 function marketTag(type) {
   return type && type.startsWith('tpex')
@@ -513,19 +515,20 @@ function marketTag(type) {
     : '<span class="tag tag-tse">TWSE</span>';
 }
 function typeTag(type) {
-  if (!type) return '<span class="tag tag-etf">ETF</span>';
-  if (type.includes('stock')) return '<span class="tag tag-stock">個股</span>';
-  return '<span class="tag tag-etf">ETF</span>';
+  return (type||'').includes('stock')
+    ? '<span class="tag tag-stock">個股</span>'
+    : '<span class="tag tag-etf">ETF</span>';
 }
 
-// ════════════════════════════════
+// ════════════════════════════════════════════
 //  UI helpers
-// ════════════════════════════════
+// ════════════════════════════════════════════
 function showSB(msg, type) {
   const el = document.getElementById('sb');
-  el.innerHTML = `<i class="ti ti-${type==='ok'?'circle-check':type==='err'?'circle-x':type==='warn'?'alert-triangle':'info-circle'}"></i> ${msg}`;
+  const icons = {ok:'circle-check',err:'circle-x',warn:'alert-triangle',info:'info-circle'};
+  el.innerHTML = `<i class="ti ti-${icons[type]||'info-circle'}"></i> ${msg}`;
   el.className = `sb show sb-${type}`;
-  if (type === 'ok') setTimeout(() => { el.className = 'sb'; }, 5000);
+  if (type === 'ok') setTimeout(() => { el.className = 'sb'; }, 6000);
 }
 function setProgress(pct, text) {
   document.getElementById('progressWrap').style.display = 'block';
@@ -534,70 +537,68 @@ function setProgress(pct, text) {
   if (pct >= 100) setTimeout(() => { document.getElementById('progressWrap').style.display = 'none'; }, 1800);
 }
 function switchTab(t) {
-  const names = ['portfolio','manage','retire','apiinfo'];
-  document.querySelectorAll('.tab').forEach((el, i) => el.classList.toggle('active', names[i] === t));
-  names.forEach(n => document.getElementById(n).classList.toggle('active', n === t));
+  ['portfolio','manage','retire','apiinfo'].forEach((n, i) => {
+    document.querySelectorAll('.tab')[i].classList.toggle('active', n === t);
+    document.getElementById(n).classList.toggle('active', n === t);
+  });
   if (t === 'manage') renderManage();
   if (t === 'retire') initRetire();
 }
 
-// ════════════════════════════════
+// ════════════════════════════════════════════
 //  API 抓取
-// ════════════════════════════════
+// ════════════════════════════════════════════
 async function safeFetch(url) {
   try {
-    const r = await fetch(url, { headers: { Accept: 'application/json' } });
-    if (!r.ok) return null;
-    return await r.json();
+    const r = await fetch(url, { headers:{ Accept:'application/json' } });
+    return r.ok ? await r.json() : null;
   } catch { return null; }
 }
 
 function getTodayTW() {
   const d = new Date();
-  const y = d.getFullYear() - 1911;
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
+  const twTime = new Date(d.toLocaleString('en-US', {timeZone:'Asia/Taipei'}));
+  const y = twTime.getFullYear() - 1911;
+  const m = String(twTime.getMonth()+1).padStart(2,'0');
+  const dd = String(twTime.getDate()).padStart(2,'0');
   return `${y}/${m}/${dd}`;
 }
 
-// 判斷現在是否已過盤後資料更新時間（台灣時間 17:30 後）
 function isAfterUpdateTime() {
-  const now = new Date();
-  const twTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Taipei' }));
-  const h = twTime.getHours(), m = twTime.getMinutes();
-  const isWeekend = twTime.getDay() === 0 || twTime.getDay() === 6;
+  const d = new Date();
+  const tw = new Date(d.toLocaleString('en-US', {timeZone:'Asia/Taipei'}));
+  const isWeekend = tw.getDay()===0 || tw.getDay()===6;
   if (isWeekend) return false;
-  return h > 17 || (h === 17 && m >= 30);
+  return tw.getHours() > 17 || (tw.getHours()===17 && tw.getMinutes()>=30);
 }
 
 async function fetchAll() {
+  if (!currentPassword) return;
   const btn = document.getElementById('fetchBtn');
   btn.disabled = true;
 
   const afterUpdate = isAfterUpdateTime();
-  const dateLabel = afterUpdate ? '今日' : '前一交易日（今日資料尚未發布）';
-  showSB(`正在載入${dateLabel}盤後資料...`, 'info');
-  setProgress(5, '步驟 1/3：載入 TWSE 收盤價...');
+  const dateLabel = afterUpdate ? '今日' : '前一交易日（今日 17:30 後才有最新資料）';
+  showSB(`正在載入 ${dateLabel} 盤後資料...`, 'info');
+  setProgress(5, '步驟 1/3：TWSE 收盤價...');
 
-  const twseData = await safeFetch('https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_AVG_ALL');
-  setProgress(30, '步驟 2/3：載入 TWSE 殖利率...');
+  const [twseData, yieldData] = await Promise.all([
+    safeFetch('https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_AVG_ALL'),
+    safeFetch('https://openapi.twse.com.tw/v1/exchangeReport/BWIBBU_d')
+  ]);
+  setProgress(60, '步驟 2/3：TPEx 上櫃資料...');
 
-  const yieldData = await safeFetch('https://openapi.twse.com.tw/v1/exchangeReport/BWIBBU_d');
-  setProgress(60, '步驟 3/3：載入 TPEx 上櫃資料...');
-
-  const todayTW = getTodayTW();
   const tpexData = await safeFetch(
-    `https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes?l=zh-tw&d=${encodeURIComponent(todayTW)}&s=0,asc,0`
+    `https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes?l=zh-tw&d=${encodeURIComponent(getTodayTW())}&s=0,asc,0`
   );
-
   setProgress(85, '比對資料中...');
 
   let ok = 0, fails = [];
   const now = new Date().toISOString();
 
   holdings.forEach((h, i) => {
-    let price = null;
     const isTSE = !h.type || h.type.startsWith('tse');
+    let price = null;
 
     if (isTSE && twseData) {
       const item = twseData.find(d => d.Code === h.code);
@@ -605,12 +606,11 @@ async function fetchAll() {
         price = parseFloat(item.ClosingPrice);
     } else if (!isTSE && tpexData) {
       const item = tpexData.find(d =>
-        (d.SecuritiesCompanyCode || d.Code || d.Symbol || '').trim() === h.code
+        (d.SecuritiesCompanyCode||d.Code||d.Symbol||'').trim() === h.code
       );
       if (item) {
-        const cp = item.ClosePrice || item.ClosingPrice || item.close || item['收盤價'];
-        if (cp && cp !== '-' && cp !== '--')
-          price = parseFloat(String(cp).replace(/,/g, ''));
+        const cp = item.ClosePrice||item.ClosingPrice||item.close||item['收盤價'];
+        if (cp && cp!=='-' && cp!=='--') price = parseFloat(String(cp).replace(/,/g,''));
       }
     }
 
@@ -619,11 +619,9 @@ async function fetchAll() {
       holdings[i].lastUpdate = now;
       ok++;
     } else {
-      // 若今日查無資料，保留舊價格（不清空）
       fails.push(h.code);
     }
 
-    // 官方殖利率
     if (isTSE && yieldData) {
       const yi = yieldData.find(d => d.Code === h.code);
       if (yi && yi.DividendYield && yi.DividendYield !== '-')
@@ -632,79 +630,70 @@ async function fetchAll() {
   });
 
   setProgress(100, '完成！');
-  save();
 
-  // 組合狀態訊息
-  const hasPrev = holdings.some(h => h.price != null);
-  let msg = `更新完成：${ok}/${holdings.length} 筆取得資料`;
+  let msg = `更新完成：${ok}/${holdings.length} 筆`;
   if (!afterUpdate) msg += `　⚠ 台灣時間 17:30 前為前一交易日資料`;
-  if (fails.length && ok > 0) msg += `　${fails.join('、')} 查無今日資料，保留舊價格`;
-  if (ok === 0 && hasPrev) msg += `（API 無回應，顯示上次快取資料）`;
-
-  showSB(msg, ok > 0 ? 'ok' : fails.length === holdings.length ? 'warn' : 'err');
+  if (fails.length && ok > 0) msg += `　${fails.join('、')} 查無資料，保留舊價格`;
+  showSB(msg, ok > 0 ? 'ok' : 'warn');
 
   btn.disabled = false;
   btn.innerHTML = '<i class="ti ti-refresh"></i> 更新盤後資料';
-
   updateHeaderTime();
   renderPortfolio();
 }
 
 function updateHeaderTime() {
   const last = holdings.find(h => h.lastUpdate);
-  if (last) {
-    const d = new Date(last.lastUpdate);
-    document.getElementById('headerUpdate').textContent =
-      `資料時間 ${d.toLocaleDateString('zh-TW')} ${d.toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit'})}`;
-  }
+  if (!last) return;
+  const d = new Date(last.lastUpdate);
+  document.getElementById('headerUpdate').textContent =
+    `資料時間 ${d.toLocaleDateString('zh-TW')} ${d.toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'})}`;
 }
 
-// ════════════════════════════════
-//  渲染持股總覽
-// ════════════════════════════════
+// ════════════════════════════════════════════
+//  渲染持股
+// ════════════════════════════════════════════
 function renderPortfolio() {
   const body = document.getElementById('portfolioBody');
-  let rows = '', totalMV = 0, totalCost = 0, totalDiv = 0, hasPrices = false;
+  let rows='', totalMV=0, totalCost=0, totalDiv=0;
 
   holdings.forEach(h => {
     const cost = h.shares * h.cost;
-    const mv = h.price != null ? h.shares * h.price : null;
-    const pnl = mv != null ? mv - cost : null;
-    const pnlPct = mv != null && cost > 0 ? pnl / cost * 100 : null;
-    const base = mv != null ? mv : cost;
-    const annDiv = base * (h.yield || 0) / 100;
+    const mv   = h.price != null ? h.shares * h.price : null;
+    const pnl  = mv != null ? mv - cost : null;
+    const pnlP = mv != null && cost > 0 ? pnl / cost * 100 : null;
+    const base  = mv != null ? mv : cost;
+    const annDiv = base * (h.yield||0) / 100;
 
     totalCost += cost;
-    totalMV += mv != null ? mv : cost;
-    totalDiv += annDiv;
-    if (mv != null) hasPrices = true;
+    totalMV   += mv != null ? mv : cost;
+    totalDiv  += annDiv;
 
     const pc = pnl > 0 ? 'green' : pnl < 0 ? 'red' : '';
     const priceCell = h.price != null
       ? `<span class="num">${h.price.toFixed(2)}</span>`
       : `<span class="dim">—</span>`;
     const upd = h.lastUpdate
-      ? new Date(h.lastUpdate).toLocaleDateString('zh-TW', {month:'2-digit',day:'2-digit'})
+      ? new Date(h.lastUpdate).toLocaleDateString('zh-TW',{month:'2-digit',day:'2-digit'})
       : '—';
 
-    let yieldCell = `<div class="yield-stack">
-      <div class="yield-row">${fd(h.yield)}% <span class="tag tag-manual" style="font-size:9px">自填</span></div>`;
+    let yc = `<div class="yield-stack"><div class="yield-row">${fd(h.yield)}% <span class="tag tag-manual" style="font-size:9px">自填</span></div>`;
     if (h.officialYield != null)
-      yieldCell += `<div class="yield-row dim">${fd(h.officialYield)}% <span class="tag tag-tse" style="font-size:9px">官方</span></div>`;
-    yieldCell += '</div>';
+      yc += `<div class="yield-row dim">${fd(h.officialYield)}% <span class="tag tag-tse" style="font-size:9px">官方</span></div>`;
+    yc += '</div>';
 
     rows += `<tr>
       <td><b style="font-family:var(--mono);font-size:13px">${h.code}</b></td>
       <td style="max-width:120px;font-size:12px">${h.name}</td>
-      <td>${typeTag(h.type)} <span class="dim" style="font-size:10px">${freq[h.freq]||''}</span></td>
+      <td>${typeTag(h.type)} <span class="dim" style="font-size:10px">${freqMap[h.freq]||''}</span></td>
       <td>${marketTag(h.type)}</td>
       <td class="num">${h.shares.toLocaleString()}</td>
       <td class="num">${fd(h.cost)}</td>
       <td>${priceCell}</td>
-      <td class="num">${fmt(mv != null ? mv : cost)}</td>
-      <td class="num ${pc}">${pnl != null ? (pnl >= 0 ? '+' : '') + fmt(pnl) : '—'}</td>
-      <td class="num ${pc}">${pnlPct != null ? (pnlPct >= 0 ? '+' : '') + fd(pnlPct) + '%' : '—'}</td>
-      <td>${yieldCell}</td>
+      <td class="num">${fmt(mv!=null?mv:cost)}</td>
+      <td class="num ${pc}">${pnl!=null?(pnl>=0?'+':'')+fmt(pnl):'—'}</td>
+      <td class="num ${pc}">${pnlP!=null?(pnlP>=0?'+':'')+fd(pnlP)+'%':'—'}</td>
+      <td>${yc}</td>
       <td class="num">${fmt(annDiv)}</td>
       <td class="dim" style="font-size:11px">${upd}</td>
     </tr>`;
@@ -712,20 +701,19 @@ function renderPortfolio() {
 
   body.innerHTML = rows || '<tr><td colspan="13" style="text-align:center;color:var(--text3);padding:2rem">尚無持股，請至「管理持股」新增</td></tr>';
 
-  // 更新 metric cards
   const totalPnl = totalMV - totalCost;
-  const pnlPct = totalCost > 0 ? totalPnl / totalCost * 100 : 0;
+  const pnlPct   = totalCost > 0 ? totalPnl / totalCost * 100 : 0;
 
   document.getElementById('totalValue').textContent = '$' + fmt(totalMV);
-  document.getElementById('totalCost').textContent = '$' + fmt(totalCost);
+  document.getElementById('totalCost').textContent  = '$' + fmt(totalCost);
 
   const pe = document.getElementById('totalPnl');
-  pe.textContent = (totalPnl >= 0 ? '+' : '') + '$' + fmt(totalPnl);
-  pe.className = 'mc-val num ' + (totalPnl >= 0 ? 'green' : 'red');
+  pe.textContent = (totalPnl>=0?'+':'') + '$' + fmt(totalPnl);
+  pe.className   = 'mc-val num ' + (totalPnl>=0?'green':'red');
 
   const pp = document.getElementById('pnlPct');
-  pp.textContent = (pnlPct >= 0 ? '+' : '') + fd(pnlPct) + '%';
-  pp.className = 'mc-sub ' + (pnlPct >= 0 ? 'green' : 'red');
+  pp.textContent = (pnlPct>=0?'+':'') + fd(pnlPct) + '%';
+  pp.className   = 'mc-sub ' + (pnlPct>=0?'green':'red');
 
   document.getElementById('totalDiv').textContent = '$' + fmt(totalDiv);
   const wY = totalMV > 0 ? totalDiv / totalMV * 100 : 0;
@@ -735,250 +723,175 @@ function renderPortfolio() {
   renderCharts();
 }
 
-// ════════════════════════════════
+// ════════════════════════════════════════════
 //  圖表
-// ════════════════════════════════
-const CHART_COLORS = ['#22d39a','#4a9eff','#a78bfa','#f0a832','#f05c6e','#34d399','#60a5fa'];
-
+// ════════════════════════════════════════════
+const CC = ['#22d39a','#4a9eff','#a78bfa','#f0a832','#f05c6e','#34d399','#60a5fa'];
 function renderCharts() {
-  const labels = holdings.map(h => h.code);
-  const mvVals = holdings.map(h => Math.round(h.price != null ? h.shares * h.price : h.shares * h.cost));
-  const pnlVals = holdings.map(h => h.price != null ? Math.round(h.shares * (h.price - h.cost)) : 0);
+  const labels  = holdings.map(h => h.code);
+  const mvVals  = holdings.map(h => Math.round(h.price!=null ? h.shares*h.price : h.shares*h.cost));
+  const pnlVals = holdings.map(h => h.price!=null ? Math.round(h.shares*(h.price-h.cost)) : 0);
   const divVals = holdings.map(h => {
-    const base = h.price != null ? h.shares * h.price : h.shares * h.cost;
-    return Math.round(base * (h.yield || 0) / 100);
+    const base = h.price!=null ? h.shares*h.price : h.shares*h.cost;
+    return Math.round(base*(h.yield||0)/100);
   });
-
-  const chartDefaults = {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } }
-  };
-
-  if (pieCI) pieCI.destroy();
-  pieCI = new Chart(document.getElementById('pieChart'), {
-    type: 'doughnut',
-    data: {
-      labels,
-      datasets: [{ data: mvVals, backgroundColor: CHART_COLORS, borderWidth: 2, borderColor: '#161b27' }]
-    },
-    options: { ...chartDefaults, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.label}: $${c.parsed.toLocaleString()}` } } } }
-  });
-
-  const barOpts = (tooltip) => ({
-    ...chartDefaults,
-    plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => tooltip(c) } } },
-    scales: {
-      y: { ticks: { color: '#555e72', font: { size: 11 }, callback: v => '$' + (Math.abs(v) >= 1000 ? Math.round(v/1000) + 'k' : v) }, grid: { color: 'rgba(255,255,255,0.05)' } },
-      x: { ticks: { color: '#555e72', font: { size: 11 } }, grid: { display: false } }
+  const bOpts = (cb) => ({
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:cb}}},
+    scales:{
+      y:{ticks:{color:'#555e72',font:{size:11},callback:v=>'$'+(Math.abs(v)>=1000?Math.round(v/1000)+'k':v)},grid:{color:'rgba(255,255,255,.05)'}},
+      x:{ticks:{color:'#555e72',font:{size:11}},grid:{display:false}}
     }
   });
-
-  if (pnlCI) pnlCI.destroy();
-  pnlCI = new Chart(document.getElementById('pnlChart'), {
-    type: 'bar',
-    data: { labels, datasets: [{ data: pnlVals, backgroundColor: pnlVals.map(v => v >= 0 ? 'rgba(34,211,154,0.7)' : 'rgba(240,92,110,0.7)'), borderRadius: 4 }] },
-    options: barOpts(c => ` ${c.label}: ${c.parsed.y >= 0 ? '+' : ''}$${c.parsed.y.toLocaleString()}`)
-  });
-
-  if (divCI) divCI.destroy();
-  divCI = new Chart(document.getElementById('divChart'), {
-    type: 'bar',
-    data: { labels, datasets: [{ data: divVals, backgroundColor: 'rgba(74,158,255,0.65)', borderRadius: 4 }] },
-    options: barOpts(c => ` ${c.label}: $${c.parsed.y.toLocaleString()}/年`)
-  });
+  if(pieCI)pieCI.destroy();
+  pieCI = new Chart(document.getElementById('pieChart'),{type:'doughnut',data:{labels,datasets:[{data:mvVals,backgroundColor:CC,borderWidth:2,borderColor:'#161b27'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.label}: $${c.parsed.toLocaleString()}`}}}}});
+  if(pnlCI)pnlCI.destroy();
+  pnlCI = new Chart(document.getElementById('pnlChart'),{type:'bar',data:{labels,datasets:[{data:pnlVals,backgroundColor:pnlVals.map(v=>v>=0?'rgba(34,211,154,.7)':'rgba(240,92,110,.7)'),borderRadius:4}]},options:bOpts(c=>` ${c.label}: ${c.parsed.y>=0?'+':''}$${c.parsed.y.toLocaleString()}`)});
+  if(divCI)divCI.destroy();
+  divCI = new Chart(document.getElementById('divChart'),{type:'bar',data:{labels,datasets:[{data:divVals,backgroundColor:'rgba(74,158,255,.65)',borderRadius:4}]},options:bOpts(c=>` ${c.label}: $${c.parsed.y.toLocaleString()}/年`)});
 }
 
-// ════════════════════════════════
+// ════════════════════════════════════════════
 //  管理持股
-// ════════════════════════════════
+// ════════════════════════════════════════════
 function renderManage() {
   const body = document.getElementById('manageBody');
   if (!holdings.length) {
     body.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text3);padding:2rem">尚無持股</td></tr>';
     return;
   }
-  body.innerHTML = holdings.map((h, i) => `
-    <tr>
-      <td><b style="font-family:var(--mono)">${h.code}</b></td>
-      <td style="font-size:12px">${h.name}</td>
-      <td>${marketTag(h.type)}</td>
-      <td class="num">${h.shares.toLocaleString()}</td>
-      <td class="num">${fd(h.cost)}</td>
-      <td class="num">${fd(h.yield)}%</td>
-      <td><span class="dim" style="font-size:12px">${freq[h.freq]||''}</span></td>
-      <td style="color:var(--text3);font-size:11px;max-width:160px">${h.note||''}</td>
-      <td style="white-space:nowrap">
-        <button class="btn btn-sm" onclick="editHolding(${i})" style="margin-right:4px"><i class="ti ti-edit"></i></button>
-        <button class="btn btn-sm btn-danger" onclick="deleteHolding(${i})"><i class="ti ti-trash"></i></button>
-      </td>
-    </tr>`).join('');
+  body.innerHTML = holdings.map((h,i) => `<tr>
+    <td><b style="font-family:var(--mono)">${h.code}</b></td>
+    <td style="font-size:12px">${h.name}</td>
+    <td>${marketTag(h.type)}</td>
+    <td class="num">${h.shares.toLocaleString()}</td>
+    <td class="num">${fd(h.cost)}</td>
+    <td class="num">${fd(h.yield)}%</td>
+    <td><span class="dim" style="font-size:12px">${freqMap[h.freq]||''}</span></td>
+    <td style="color:var(--text3);font-size:11px;max-width:160px">${h.note||''}</td>
+    <td style="white-space:nowrap">
+      <button class="btn btn-sm" onclick="editHolding(${i})" style="margin-right:4px"><i class="ti ti-edit"></i></button>
+      <button class="btn btn-sm btn-danger" onclick="deleteHolding(${i})"><i class="ti ti-trash"></i></button>
+    </td>
+  </tr>`).join('');
 }
 
 function addOrUpdate() {
-  const code = document.getElementById('fCode').value.trim().toUpperCase();
-  const name = document.getElementById('fName').value.trim();
+  const code   = document.getElementById('fCode').value.trim().toUpperCase();
+  const name   = document.getElementById('fName').value.trim();
   const shares = parseFloat(document.getElementById('fShares').value);
-  const cost = parseFloat(document.getElementById('fCost').value);
+  const cost   = parseFloat(document.getElementById('fCost').value);
+  const fs = document.getElementById('formStatus');
 
-  if (!code || !name || isNaN(shares) || isNaN(cost)) {
-    const fs = document.getElementById('formStatus');
-    fs.style.display = 'block';
-    fs.style.color = 'var(--red)';
-    fs.textContent = '請填寫必填欄位（代號、名稱、股數、成本）';
-    return;
+  if (!code||!name||isNaN(shares)||isNaN(cost)) {
+    fs.style.display='block'; fs.style.color='var(--red)';
+    fs.textContent='請填寫必填欄位（代號、名稱、股數、成本）'; return;
   }
 
   const h = {
     code, name,
     type: document.getElementById('fType').value,
     shares, cost,
-    yield: parseFloat(document.getElementById('fYield').value) || 0,
-    freq: document.getElementById('fFreq').value,
-    note: document.getElementById('fNote').value.trim(),
-    price: editIdx >= 0 ? holdings[editIdx].price : null,
-    officialYield: editIdx >= 0 ? holdings[editIdx].officialYield : null,
-    lastUpdate: editIdx >= 0 ? holdings[editIdx].lastUpdate : null
+    yield: parseFloat(document.getElementById('fYield').value)||0,
+    freq:  document.getElementById('fFreq').value,
+    note:  document.getElementById('fNote').value.trim(),
+    price: editIdx>=0 ? holdings[editIdx].price : null,
+    officialYield: editIdx>=0 ? holdings[editIdx].officialYield : null,
+    lastUpdate: editIdx>=0 ? holdings[editIdx].lastUpdate : null
   };
 
-  if (editIdx >= 0) { holdings[editIdx] = h; editIdx = -1; }
+  if (editIdx>=0) { holdings[editIdx]=h; editIdx=-1; }
   else { holdings.push(h); }
 
-  save();
   clearForm();
   renderPortfolio();
   renderManage();
-
-  const fs = document.getElementById('formStatus');
-  fs.style.display = 'block';
-  fs.style.color = 'var(--green)';
-  fs.textContent = `已儲存 ${h.name}`;
-  setTimeout(() => { fs.style.display = 'none'; }, 3000);
+  fs.style.display='block'; fs.style.color='var(--green)';
+  fs.textContent=`已儲存 ${h.name}，記得按「儲存書籤」更新網址！`;
+  setTimeout(()=>{ fs.style.display='none'; },4000);
 }
 
 function editHolding(i) {
-  editIdx = i;
-  const h = holdings[i];
-  document.getElementById('fCode').value = h.code;
-  document.getElementById('fName').value = h.name;
-  document.getElementById('fType').value = h.type || 'tse-etf';
-  document.getElementById('fShares').value = h.shares;
-  document.getElementById('fCost').value = h.cost;
+  editIdx = i; const h = holdings[i];
+  document.getElementById('fCode').value  = h.code;
+  document.getElementById('fName').value  = h.name;
+  document.getElementById('fType').value  = h.type||'tse-etf';
+  document.getElementById('fShares').value= h.shares;
+  document.getElementById('fCost').value  = h.cost;
   document.getElementById('fYield').value = h.yield;
-  document.getElementById('fFreq').value = h.freq || 'quarterly';
-  document.getElementById('fNote').value = h.note || '';
-  document.getElementById('fCode').focus();
+  document.getElementById('fFreq').value  = h.freq||'quarterly';
+  document.getElementById('fNote').value  = h.note||'';
   switchTab('manage');
+  document.getElementById('fCode').focus();
 }
 
 function deleteHolding(i) {
   if (!confirm(`確定刪除「${holdings[i].name}」？`)) return;
-  holdings.splice(i, 1);
-  save();
-  renderPortfolio();
-  renderManage();
+  holdings.splice(i,1);
+  renderPortfolio(); renderManage();
 }
 
 function clearForm() {
-  editIdx = -1;
-  ['fCode','fName','fShares','fCost','fYield','fNote'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('fType').value = 'tse-etf';
-  document.getElementById('fFreq').value = 'quarterly';
-  document.getElementById('formStatus').style.display = 'none';
+  editIdx=-1;
+  ['fCode','fName','fShares','fCost','fYield','fNote'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fType').value='tse-etf';
+  document.getElementById('fFreq').value='quarterly';
+  document.getElementById('formStatus').style.display='none';
 }
 
-// ════════════════════════════════
+// ════════════════════════════════════════════
 //  退休試算
-// ════════════════════════════════
+// ════════════════════════════════════════════
 function initRetire() {
   const el = document.getElementById('rInitial');
-  if (!el.value) {
-    const tc = holdings.reduce((s, h) => s + h.shares * h.cost, 0);
-    el.value = Math.round(tc);
-  }
+  if (!el.value) el.value = Math.round(holdings.reduce((s,h)=>s+h.shares*h.cost,0));
   updateSliders();
 }
-
 function updateSliders() {
   document.getElementById('rMonthlyOut').textContent = parseInt(document.getElementById('rMonthly').value).toLocaleString();
-  document.getElementById('rRateOut').textContent = parseFloat(document.getElementById('rRate').value).toFixed(1) + '%';
-  document.getElementById('rReinvestOut').textContent = document.getElementById('rReinvest').value + '%';
+  document.getElementById('rRateOut').textContent    = parseFloat(document.getElementById('rRate').value).toFixed(1)+'%';
+  document.getElementById('rReinvestOut').textContent= document.getElementById('rReinvest').value+'%';
 }
-
 function calcRetire() {
-  const initial = parseFloat(document.getElementById('rInitial').value) || 0;
-  const target  = parseFloat(document.getElementById('rTarget').value)  || 0;
-  const monthly = parseInt(document.getElementById('rMonthly').value)   || 0;
-  const annRate = parseFloat(document.getElementById('rRate').value) / 100;
-
-  if (initial >= target) {
-    document.getElementById('retireYears').textContent = '已達標！';
-    document.getElementById('retireResult').style.display = 'block';
-    return;
+  const initial = parseFloat(document.getElementById('rInitial').value)||0;
+  const target  = parseFloat(document.getElementById('rTarget').value)||0;
+  const monthly = parseInt(document.getElementById('rMonthly').value)||0;
+  const annRate = parseFloat(document.getElementById('rRate').value)/100;
+  if (initial>=target){ document.getElementById('retireYears').textContent='已達標！'; document.getElementById('retireResult').style.display='block'; return; }
+  const mr=annRate/12; let assets=[initial],cur=initial,yn=null;
+  for(let m=1;m<=600;m++){
+    cur=cur*(1+mr)+monthly;
+    if(m%12===0)assets.push(Math.round(cur));
+    if(cur>=target&&yn==null)yn=Math.ceil(m/12);
+    if(cur>=target*2.5)break;
   }
-
-  const mr = annRate / 12;
-  let assets = [initial], cur = initial, yearsNeeded = null;
-  for (let m = 1; m <= 600; m++) {
-    cur = cur * (1 + mr) + monthly;
-    if (m % 12 === 0) assets.push(Math.round(cur));
-    if (cur >= target && yearsNeeded == null) yearsNeeded = Math.ceil(m / 12);
-    if (cur >= target * 2.5) break;
-  }
-
-  const yn = yearsNeeded || assets.length - 1;
-  const totalAdded = monthly * yn * 12;
-  const finalVal = assets[Math.min(yn, assets.length - 1)] || cur;
-  const growth = finalVal - initial - totalAdded;
-
-  document.getElementById('retireYears').textContent = yearsNeeded ? yearsNeeded + ' 年' : '期間內未達標';
-  document.getElementById('rResInit').textContent = '$' + fmt(initial);
-  document.getElementById('rResTotalIn').textContent = '$' + fmt(initial + totalAdded);
-  document.getElementById('rResGrowth').textContent = '+$' + fmt(growth);
-
-  const showN = Math.min(yn + 5, assets.length);
-  const lbls = Array.from({ length: showN }, (_, i) => i === 0 ? '現在' : i + '年');
-  const data = assets.slice(0, showN);
-
-  if (retireCI) retireCI.destroy();
-  retireCI = new Chart(document.getElementById('retireChart'), {
-    type: 'line',
-    data: { labels: lbls, datasets: [
-      { label: '資產', data, borderColor: '#22d39a', backgroundColor: 'rgba(34,211,154,0.06)', tension: 0.4, fill: true, pointRadius: 2, pointBackgroundColor: '#22d39a' },
-      { label: '目標', data: Array(showN).fill(target), borderColor: 'rgba(240,92,110,0.6)', borderDash: [6,4], pointRadius: 0, borderWidth: 1.5 }
-    ]},
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.dataset.label}: $${Math.round(c.parsed.y).toLocaleString()}` } } },
-      scales: {
-        y: { ticks: { color: '#555e72', font:{size:11}, callback: v => '$' + (Math.abs(v) >= 1000000 ? (v/1000000).toFixed(1)+'M' : Math.round(v/1000)+'k') }, grid: { color: 'rgba(255,255,255,0.05)' } },
-        x: { ticks: { color: '#555e72', font:{size:11} }, grid: { display: false } }
-      }
-    }
+  const y=yn||assets.length-1;
+  const totalAdded=monthly*y*12;
+  const finalVal=assets[Math.min(y,assets.length-1)]||cur;
+  document.getElementById('retireYears').textContent = yn ? yn+' 年' : '期間內未達標';
+  document.getElementById('rResInit').textContent    = '$'+fmt(initial);
+  document.getElementById('rResTotalIn').textContent = '$'+fmt(initial+totalAdded);
+  document.getElementById('rResGrowth').textContent  = '+$'+fmt(finalVal-initial-totalAdded);
+  const showN=Math.min(y+5,assets.length);
+  const lbls=Array.from({length:showN},(_,i)=>i===0?'現在':i+'年');
+  if(retireCI)retireCI.destroy();
+  retireCI=new Chart(document.getElementById('retireChart'),{type:'line',data:{labels:lbls,datasets:[
+    {label:'資產',data:assets.slice(0,showN),borderColor:'#22d39a',backgroundColor:'rgba(34,211,154,.06)',tension:.4,fill:true,pointRadius:2,pointBackgroundColor:'#22d39a'},
+    {label:'目標',data:Array(showN).fill(target),borderColor:'rgba(240,92,110,.6)',borderDash:[6,4],pointRadius:0,borderWidth:1.5}
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: $${Math.round(c.parsed.y).toLocaleString()}`}}},scales:{y:{ticks:{color:'#555e72',font:{size:11},callback:v=>'$'+(Math.abs(v)>=1000000?(v/1000000).toFixed(1)+'M':Math.round(v/1000)+'k')},grid:{color:'rgba(255,255,255,.05)'}},x:{ticks:{color:'#555e72',font:{size:11}},grid:{display:false}}}}});
+  const scenarios=[{l:'保守 (-2%)',r:annRate-.02},{l:'基本 (當前)',r:annRate},{l:'樂觀 (+2%)',r:annRate+.02}];
+  let html='<div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">三情境比較</div><div class="metric-row">';
+  scenarios.forEach(s=>{
+    if(s.r<=0){html+=`<div class="mc"><div class="mc-label">${s.l}</div><div class="mc-val" style="font-size:14px">報酬率過低</div></div>`;return;}
+    const mr2=s.r/12;let c2=initial,mo2=0;
+    for(let m=1;m<=600;m++){c2=c2*(1+mr2)+monthly;mo2=m;if(c2>=target)break;}
+    html+=`<div class="mc"><div class="mc-label">${s.l}</div><div class="mc-val num" style="font-size:16px">${Math.ceil(mo2/12)} 年</div></div>`;
   });
-
-  // 情境比較
-  const scenarios = [
-    { l: '保守 (-2%)', r: annRate - 0.02 },
-    { l: '基本 (當前)', r: annRate },
-    { l: '樂觀 (+2%)', r: annRate + 0.02 }
-  ];
-  let html = '<div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">三情境比較</div><div class="metric-row">';
-  scenarios.forEach(s => {
-    if (s.r <= 0) { html += `<div class="mc"><div class="mc-label">${s.l}</div><div class="mc-val" style="font-size:14px">報酬率過低</div></div>`; return; }
-    const mr2 = s.r / 12; let c2 = initial, mo2 = 0;
-    for (let m = 1; m <= 600; m++) { c2 = c2 * (1 + mr2) + monthly; mo2 = m; if (c2 >= target) break; }
-    html += `<div class="mc"><div class="mc-label">${s.l}</div><div class="mc-val num" style="font-size:16px">${Math.ceil(mo2/12)} 年</div></div>`;
-  });
-  html += '</div>';
-  document.getElementById('retireScenarios').innerHTML = html;
-  document.getElementById('retireResult').style.display = 'block';
+  html+='</div>';
+  document.getElementById('retireScenarios').innerHTML=html;
+  document.getElementById('retireResult').style.display='block';
 }
 
-// ════════════════════════════════
-//  初始化
-// ════════════════════════════════
-renderPortfolio();
 updateSliders();
 </script>
 </body>

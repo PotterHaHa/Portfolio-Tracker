@@ -214,7 +214,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 <div class="container">
   <div class="tab-bar">
     <button class="tab active" onclick="switchTab('portfolio')"><i class="ti ti-chart-bar"></i> 持股總覽</button>
-    <button class="tab" onclick="switchTab('manage')"><i class="ti ti-edit"></i> 管理持股</button>
     <button class="tab" onclick="switchTab('retire')"><i class="ti ti-target"></i> 退休試算</button>
     <button class="tab" onclick="switchTab('apiinfo')"><i class="ti ti-info-circle"></i> 使用說明</button>
   </div>
@@ -250,7 +249,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
         <thead><tr>
           <th>代號</th><th>名稱</th><th>類型</th>
           <th>持股</th><th>成本</th><th style="width:110px">現價（可輸入）</th><th>市值</th>
-          <th>損益</th><th>損益%</th><th>殖利率</th><th>年配息</th>
+          <th>損益</th><th>損益%</th><th>殖利率</th><th>年配息</th><th style="width:60px">操作</th>
         </tr></thead>
         <tbody id="portfolioBody"></tbody>
       </table>
@@ -261,11 +260,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
       <div class="chart-box"><div class="chart-title">未實現損益</div><div class="chart-canvas"><canvas id="pnlChart" role="img" aria-label="各標的損益"></canvas></div></div>
       <div class="chart-box"><div class="chart-title">預估年配息</div><div class="chart-canvas"><canvas id="divChart" role="img" aria-label="各標的配息"></canvas></div></div>
     </div>
-  </div>
 
-  <!-- ══ 管理持股 ══ -->
-  <div id="manage" class="section">
-    <h2 style="margin-bottom:1.25rem;font-size:15px;font-weight:600">新增 / 編輯持股</h2>
+    <hr class="divider">
+
+    <h2 style="margin-bottom:1.25rem;font-size:15px;font-weight:600"><i class="ti ti-plus" style="color:var(--green)"></i> 新增持股</h2>
     <div class="form-box">
       <div class="form-grid g3">
         <div><label class="form-label">股票代號 *</label><input id="fCode" placeholder="如 0050、00772B" maxlength="8"></div>
@@ -296,17 +294,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
         <div><label class="form-label">備註</label><input id="fNote" placeholder="策略說明"></div>
       </div>
       <div class="btn-row" style="margin-top:14px">
-        <button class="btn btn-primary" onclick="addOrUpdate()"><i class="ti ti-check"></i> 儲存</button>
-        <button class="btn" onclick="clearForm()">清除</button>
+        <button class="btn btn-primary" onclick="addOrUpdate()"><i class="ti ti-check"></i> 新增到清單</button>
+        <button class="btn" onclick="clearForm()">清除欄位</button>
       </div>
       <div id="formStatus" style="font-size:12px;color:var(--text3);margin-top:8px;display:none"></div>
-    </div>
-    <h2 style="margin-bottom:1rem;font-size:15px;font-weight:600">目前持股清單</h2>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>代號</th><th>名稱</th><th>市場</th><th>股數</th><th>成本</th><th>殖利率</th><th>頻率</th><th>備註</th><th style="width:150px">操作</th></tr></thead>
-        <tbody id="manageBody"></tbody>
-      </table>
     </div>
   </div>
 
@@ -533,7 +524,6 @@ async function decrypt(b64, password) {
 let holdings = [];
 let currentPassword = null;
 let pieCI=null, pnlCI=null, divCI=null, retireCI=null;
-let editIdx = -1;
 
 function defaultHoldings() {
   return [
@@ -648,11 +638,6 @@ const fmt = n => n==null ? '—' : Math.round(n).toLocaleString();
 const fd  = (n,d=2) => n==null ? '—' : parseFloat(n).toFixed(d);
 const freqMap = {monthly:'月配',quarterly:'季配',semiannual:'半配',annual:'年配'};
 
-function marketTag(type) {
-  return type && type.startsWith('tpex')
-    ? '<span class="tag tag-tpex">TPEx</span>'
-    : '<span class="tag tag-tse">TWSE</span>';
-}
 function typeTag(type) {
   return (type||'').includes('stock')
     ? '<span class="tag tag-stock">個股</span>'
@@ -670,11 +655,10 @@ function showSB(msg, type) {
   if (type === 'ok') setTimeout(() => { el.className = 'sb'; }, 6000);
 }
 function switchTab(t) {
-  ['portfolio','manage','retire','apiinfo'].forEach((n, i) => {
+  ['portfolio','retire','apiinfo'].forEach((n, i) => {
     document.querySelectorAll('.tab')[i].classList.toggle('active', n === t);
     document.getElementById(n).classList.toggle('active', n === t);
   });
-  if (t === 'manage') renderManage();
   if (t === 'retire') initRetire();
 }
 
@@ -684,14 +668,47 @@ function switchTab(t) {
 // ════════════════════════════════════════════
 function renderPortfolio() {
   const body = document.getElementById('portfolioBody');
-  let rows='', totalMV=0, totalCost=0, totalDiv=0;
+  let rows='';
+
+  holdings.forEach((h, i) => {
+    const nameInput   = `<input type="text" class="price-input" style="width:110px;text-align:left;font-size:12px" value="${h.name.replace(/"/g,'&quot;')}" onchange="updateField(${i},'name',this.value)" aria-label="${h.code} 名稱">`;
+    const sharesInput = `<input type="number" step="1" class="price-input" style="width:90px" value="${h.shares}" onchange="updateField(${i},'shares',this.value)" aria-label="${h.code} 持股數">`;
+    const costInput   = `<input type="number" step="0.01" class="price-input" style="width:80px" value="${h.cost}" onchange="updateField(${i},'cost',this.value)" aria-label="${h.code} 成本">`;
+    const priceInput  = `<input type="number" step="0.01" class="price-input" value="${h.price != null ? h.price : ''}" placeholder="輸入" onchange="updateField(${i},'price',this.value)" aria-label="${h.code} 現價">`;
+    const yc = `<div class="yield-row">${fd(h.yield)}% <span class="tag tag-manual" style="font-size:9px">自填</span></div>`;
+
+    rows += `<tr>
+      <td><b style="font-family:var(--mono);font-size:13px">${h.code}</b></td>
+      <td>${nameInput}</td>
+      <td>${typeTag(h.type)} <span class="dim" style="font-size:10px">${freqMap[h.freq]||''}</span></td>
+      <td>${sharesInput}</td>
+      <td>${costInput}</td>
+      <td>${priceInput}</td>
+      <td class="num" id="mv-${i}"></td>
+      <td class="num" id="pnl-${i}"></td>
+      <td class="num" id="pnlp-${i}"></td>
+      <td>${yc}</td>
+      <td class="num" id="div-${i}"></td>
+      <td><button class="btn btn-sm btn-danger" onclick="deleteHolding(${i})" aria-label="刪除 ${h.code}"><i class="ti ti-trash"></i></button></td>
+    </tr>`;
+  });
+
+  body.innerHTML = rows || '<tr><td colspan="12" style="text-align:center;color:var(--text3);padding:2rem">尚無持股，請用下方表單新增</td></tr>';
+
+  recalcTotals();
+  renderCharts();
+}
+
+// 重算每列衍生數字 + 上方總計（不重繪輸入框，避免輸入時失焦）
+function recalcTotals() {
+  let totalMV=0, totalCost=0, totalDiv=0;
 
   holdings.forEach((h, i) => {
     const cost = h.shares * h.cost;
     const mv   = h.price != null ? h.shares * h.price : null;
     const pnl  = mv != null ? mv - cost : null;
     const pnlP = mv != null && cost > 0 ? pnl / cost * 100 : null;
-    const base  = mv != null ? mv : cost;
+    const base = mv != null ? mv : cost;
     const annDiv = base * (h.yield||0) / 100;
 
     totalCost += cost;
@@ -699,27 +716,17 @@ function renderPortfolio() {
     totalDiv  += annDiv;
 
     const pc = pnl > 0 ? 'green' : pnl < 0 ? 'red' : '';
-    // 現價可直接輸入，onchange 即時更新
-    const priceInput = `<input type="number" step="0.01" class="price-input" value="${h.price != null ? h.price : ''}" placeholder="輸入" onchange="updatePrice(${i}, this.value)" aria-label="${h.code} 現價">`;
-
-    const yc = `<div class="yield-row">${fd(h.yield)}% <span class="tag tag-manual" style="font-size:9px">自填</span></div>`;
-
-    rows += `<tr>
-      <td><b style="font-family:var(--mono);font-size:13px">${h.code}</b></td>
-      <td style="max-width:120px;font-size:12px">${h.name}</td>
-      <td>${typeTag(h.type)} <span class="dim" style="font-size:10px">${freqMap[h.freq]||''}</span></td>
-      <td class="num">${h.shares.toLocaleString()}</td>
-      <td class="num">${fd(h.cost)}</td>
-      <td>${priceInput}</td>
-      <td class="num">${fmt(mv!=null?mv:cost)}</td>
-      <td class="num ${pc}">${pnl!=null?(pnl>=0?'+':'')+fmt(pnl):'—'}</td>
-      <td class="num ${pc}">${pnlP!=null?(pnlP>=0?'+':'')+fd(pnlP)+'%':'—'}</td>
-      <td>${yc}</td>
-      <td class="num">${fmt(annDiv)}</td>
-    </tr>`;
+    const set = (id, txt, cls) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = txt;
+      el.className = 'num' + (cls ? ' ' + cls : '');
+    };
+    set(`mv-${i}`,  fmt(mv != null ? mv : cost));
+    set(`pnl-${i}`, pnl != null ? (pnl>=0?'+':'')+fmt(pnl) : '—', pc);
+    set(`pnlp-${i}`,pnlP != null ? (pnlP>=0?'+':'')+fd(pnlP)+'%' : '—', pc);
+    set(`div-${i}`, fmt(annDiv));
   });
-
-  body.innerHTML = rows || '<tr><td colspan="11" style="text-align:center;color:var(--text3);padding:2rem">尚無持股，請至「管理持股」新增</td></tr>';
 
   const totalPnl = totalMV - totalCost;
   const pnlPct   = totalCost > 0 ? totalPnl / totalCost * 100 : 0;
@@ -742,11 +749,21 @@ function renderPortfolio() {
   renderCharts();
 }
 
-// 手動更新單一持股現價
-function updatePrice(i, val) {
-  const p = parseFloat(val);
-  holdings[i].price = (!isNaN(p) && p > 0) ? p : null;
-  renderPortfolio();
+// 手動更新單一持股的任一欄位
+function updateField(i, field, val) {
+  if (field === 'name') {
+    holdings[i].name = val.trim() || holdings[i].code;
+    return; // 名稱不影響計算，不需重算
+  }
+  const v = parseFloat(val);
+  if (field === 'price') {
+    holdings[i].price = (!isNaN(v) && v > 0) ? v : null;
+  } else if (field === 'shares') {
+    if (!isNaN(v) && v >= 0) holdings[i].shares = v;
+  } else if (field === 'cost') {
+    if (!isNaN(v) && v >= 0) holdings[i].cost = v;
+  }
+  recalcTotals();  // 只更新數字，不重繪輸入框
 }
 
 // 清除所有現價
@@ -786,30 +803,8 @@ function renderCharts() {
 }
 
 // ════════════════════════════════════════════
-//  管理持股
+//  新增 / 刪除持股
 // ════════════════════════════════════════════
-function renderManage() {
-  const body = document.getElementById('manageBody');
-  if (!holdings.length) {
-    body.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text3);padding:2rem">尚無持股</td></tr>';
-    return;
-  }
-  body.innerHTML = holdings.map((h,i) => `<tr>
-    <td><b style="font-family:var(--mono)">${h.code}</b></td>
-    <td style="font-size:12px">${h.name}</td>
-    <td>${marketTag(h.type)}</td>
-    <td class="num">${h.shares.toLocaleString()}</td>
-    <td class="num">${fd(h.cost)}</td>
-    <td class="num">${fd(h.yield)}%</td>
-    <td><span class="dim" style="font-size:12px">${freqMap[h.freq]||''}</span></td>
-    <td style="color:var(--text3);font-size:11px;max-width:160px">${h.note||''}</td>
-    <td style="white-space:nowrap">
-      <button class="btn btn-sm btn-edit" onclick="editHolding(${i})" style="margin-right:6px"><i class="ti ti-edit"></i> 編輯</button>
-      <button class="btn btn-sm btn-danger" onclick="deleteHolding(${i})"><i class="ti ti-trash"></i> 刪除</button>
-    </td>
-  </tr>`).join('');
-}
-
 function addOrUpdate() {
   const code   = document.getElementById('fCode').value.trim().toUpperCase();
   const name   = document.getElementById('fName').value.trim();
@@ -822,49 +817,30 @@ function addOrUpdate() {
     fs.textContent='請填寫必填欄位（代號、名稱、股數、成本）'; return;
   }
 
-  const h = {
+  holdings.push({
     code, name,
     type: document.getElementById('fType').value,
     shares, cost,
     yield: parseFloat(document.getElementById('fYield').value)||0,
     freq:  document.getElementById('fFreq').value,
     note:  document.getElementById('fNote').value.trim(),
-    price: editIdx>=0 ? holdings[editIdx].price : null
-  };
-
-  if (editIdx>=0) { holdings[editIdx]=h; editIdx=-1; }
-  else { holdings.push(h); }
+    price: null
+  });
 
   clearForm();
   renderPortfolio();
-  renderManage();
   fs.style.display='block'; fs.style.color='var(--green)';
-  fs.textContent=`已儲存 ${h.name}，記得按「儲存書籤」更新網址！`;
+  fs.textContent=`已新增 ${name}，記得按「儲存書籤」更新網址！`;
   setTimeout(()=>{ fs.style.display='none'; },4000);
-}
-
-function editHolding(i) {
-  editIdx = i; const h = holdings[i];
-  document.getElementById('fCode').value  = h.code;
-  document.getElementById('fName').value  = h.name;
-  document.getElementById('fType').value  = h.type||'tse-etf';
-  document.getElementById('fShares').value= h.shares;
-  document.getElementById('fCost').value  = h.cost;
-  document.getElementById('fYield').value = h.yield;
-  document.getElementById('fFreq').value  = h.freq||'quarterly';
-  document.getElementById('fNote').value  = h.note||'';
-  switchTab('manage');
-  document.getElementById('fCode').focus();
 }
 
 function deleteHolding(i) {
   if (!confirm(`確定刪除「${holdings[i].name}」？`)) return;
   holdings.splice(i,1);
-  renderPortfolio(); renderManage();
+  renderPortfolio();
 }
 
 function clearForm() {
-  editIdx=-1;
   ['fCode','fName','fShares','fCost','fYield','fNote'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('fType').value='tse-etf';
   document.getElementById('fFreq').value='quarterly';

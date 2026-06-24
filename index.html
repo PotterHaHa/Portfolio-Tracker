@@ -28,6 +28,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .logo{font-weight:600;font-size:15px;letter-spacing:-.3px}.logo span{color:var(--green)}
 .header-right{display:flex;align-items:center;gap:12px}
 .last-update{font-size:12px;color:var(--text3);font-family:var(--mono)}
+.price-input{width:90px;padding:5px 8px;font-family:var(--mono);font-size:13px;text-align:right;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;color:var(--text)}
+.price-input:focus{border-color:var(--green);outline:none}
+.price-input::-webkit-inner-spin-button{opacity:0.4}
 .lock-badge{display:flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--border2);color:var(--text3)}
 .lock-badge.locked{color:var(--green);border-color:rgba(34,211,154,0.3);background:var(--green-dim)}
 
@@ -204,7 +207,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 <header class="header">
   <div class="logo">Harry <span>Portfolio</span></div>
   <div class="header-right">
-    <span class="last-update" id="headerUpdate">尚未更新</span>
     <span class="lock-badge locked" id="lockBadge"><i class="ti ti-lock"></i> 已加密</span>
   </div>
 </header>
@@ -214,16 +216,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
     <button class="tab active" onclick="switchTab('portfolio')"><i class="ti ti-chart-bar"></i> 持股總覽</button>
     <button class="tab" onclick="switchTab('manage')"><i class="ti ti-edit"></i> 管理持股</button>
     <button class="tab" onclick="switchTab('retire')"><i class="ti ti-target"></i> 退休試算</button>
-    <button class="tab" onclick="switchTab('apiinfo')"><i class="ti ti-info-circle"></i> API 說明</button>
+    <button class="tab" onclick="switchTab('apiinfo')"><i class="ti ti-info-circle"></i> 使用說明</button>
   </div>
 
   <!-- ══ 持股總覽 ══ -->
   <div id="portfolio" class="section active">
     <div id="sb" class="sb"></div>
-    <div class="progress-wrap" id="progressWrap">
-      <div class="progress-label" id="progressLabel">準備中...</div>
-      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-    </div>
 
     <div class="metric-row">
       <div class="mc"><div class="mc-label">總市值</div><div class="mc-val num" id="totalValue">—</div><div class="mc-sub">NT$</div></div>
@@ -236,14 +234,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
     <div class="section-hd">
       <div>
         <h2>持股明細</h2>
-        <div class="api-legend">
-          <span class="legend-item"><span class="tag tag-tse">TWSE</span> 上市</span>
-          <span class="legend-item"><span class="tag tag-tpex">TPEx</span> 上櫃</span>
-          <span class="legend-item"><span class="tag tag-manual">自填</span> 手動殖利率</span>
+        <div style="font-size:12px;color:var(--text3);margin-top:6px;line-height:1.6">
+          直接在下方「現價」欄輸入收盤價，市值損益會即時計算。<br>
+          參考股價：<a href="https://www.twse.com.tw/zh/" target="_blank" style="color:var(--blue)">證交所</a>（上市）、<a href="https://www.tpex.org.tw/zh-tw/" target="_blank" style="color:var(--blue)">櫃買中心</a>（上櫃）、<a href="https://www.wantgoo.com/" target="_blank" style="color:var(--blue)">玩股網</a>
         </div>
       </div>
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="fetchAll()" id="fetchBtn"><i class="ti ti-refresh"></i> 更新盤後資料</button>
+        <button class="btn" onclick="clearPrices()"><i class="ti ti-eraser"></i> 清除現價</button>
         <button class="btn" onclick="openSaveModal()" style="color:var(--green);border-color:rgba(34,211,154,.3)"><i class="ti ti-bookmark"></i> 儲存書籤</button>
       </div>
     </div>
@@ -251,9 +248,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
     <div class="table-wrap">
       <table>
         <thead><tr>
-          <th>代號</th><th>名稱</th><th>類型</th><th>市場</th>
-          <th>持股</th><th>成本</th><th>現價</th><th>市值</th>
-          <th>損益</th><th>損益%</th><th>殖利率</th><th>年配息</th><th>更新</th>
+          <th>代號</th><th>名稱</th><th>類型</th>
+          <th>持股</th><th>成本</th><th style="width:110px">現價（可輸入）</th><th>市值</th>
+          <th>損益</th><th>損益%</th><th>殖利率</th><th>年配息</th>
         </tr></thead>
         <tbody id="portfolioBody"></tbody>
       </table>
@@ -464,18 +461,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
   </div>
 
 
-  <!-- ══ API 說明 ══ -->
+  <!-- ══ 使用說明 ══ -->
   <div id="apiinfo" class="section">
-    <h2 style="margin-bottom:1.25rem;font-size:15px;font-weight:600">API 資料來源 &amp; 加密說明</h2>
+    <h2 style="margin-bottom:1.25rem;font-size:15px;font-weight:600">使用說明</h2>
     <div class="api-card" style="border-color:rgba(34,211,154,.25)">
-      <div class="api-card-header"><span class="tag tag-tse">TWSE 上市</span><span class="api-card-title">台灣證券交易所 OpenAPI</span></div>
-      <div class="api-url">收盤價：https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_AVG_ALL<br>殖利率：https://openapi.twse.com.tw/v1/exchangeReport/BWIBBU_d</div>
-      <div class="api-note">適用 4~5 碼上市代號。<b>更新時間：</b>前一交易日盤後，通常隔天凌晨更新完成。免費，無需 API Key。</div>
-    </div>
-    <div class="api-card" style="border-color:rgba(74,158,255,.25)">
-      <div class="api-card-header"><span class="tag tag-tpex">TPEx 上櫃</span><span class="api-card-title">證券櫃檯買賣中心 OpenAPI</span></div>
-      <div class="api-url">收盤價：https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes</div>
-      <div class="api-note">適用帶英文字母的 6 碼代號（00772B、00400A）。免費，無需 API Key。</div>
+      <div class="api-card-header"><span class="tag tag-tse"><i class="ti ti-edit"></i> 更新股價</span><span class="api-card-title">手動輸入收盤價</span></div>
+      <div class="api-note">
+        在「持股總覽」的<b>現價</b>欄位直接輸入收盤價，市值、損益、殖利率會即時重新計算。<br><br>
+        <b>去哪裡查股價：</b><br>
+        ・上市股（0050、00878、00400A、00713）→ <a href="https://www.twse.com.tw/zh/" target="_blank" style="color:var(--blue)">證交所</a><br>
+        ・上櫃股（00772B）→ <a href="https://www.tpex.org.tw/zh-tw/" target="_blank" style="color:var(--blue)">櫃買中心</a><br>
+        ・或用 <a href="https://www.wantgoo.com/" target="_blank" style="color:var(--blue)">玩股網</a>、Yahoo 股市等查當日收盤價。<br><br>
+        <b>提醒：</b>輸入價格後若要跨裝置保存，記得按「儲存書籤」更新你的書籤 URL。
+      </div>
     </div>
     <div class="api-card" style="border-color:rgba(167,139,250,.3)">
       <div class="api-card-header"><span class="tag tag-etf" style="background:rgba(167,139,250,.15)"><i class="ti ti-lock"></i> 加密方式</span><span class="api-card-title">AES-GCM 256-bit（瀏覽器原生）</span></div>
@@ -483,6 +481,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
         <b>原理：</b>你的持股資料在按下「儲存書籤」時，以你輸入的密碼透過 PBKDF2 衍生金鑰，用 AES-GCM 256-bit 加密，編碼為 Base64 後附加在 URL 的 # 後面。<br><br>
         <b>URL Hash 的特性：</b># 後面的內容瀏覽器不會傳給伺服器，因此 GitHub 完全看不到你的任何資料。<br><br>
         <b>安全說明：</b>密碼只存在你的記憶中，加密在本地完成，沒有任何資料上傳。就算有人拿到你的 URL，沒有密碼也無法解密。
+      </div>
+    </div>
+    <div class="api-card" style="border-color:rgba(240,168,50,.25)">
+      <div class="api-card-header"><span class="tag tag-stock"><i class="ti ti-bookmark"></i> 跨裝置使用</span><span class="api-card-title">Chrome 書籤同步</span></div>
+      <div class="api-note">
+        用 Chrome 登入 Google 帳號並開啟書籤同步後，「儲存書籤」存下的 URL 會自動同步到你所有裝置。換電腦時開同一個書籤、輸入密碼即可還原。<br><br>
+        <b>習慣養成：</b>每次改持股或更新股價後，按一次「儲存書籤」並覆蓋更新舊書籤，確保資料是最新的。
       </div>
     </div>
   </div>
@@ -532,11 +537,11 @@ let editIdx = -1;
 
 function defaultHoldings() {
   return [
-    {code:'0050',  name:'元大台灣50',       type:'tse-etf', shares:16895,cost:41.11,yield:3.5,freq:'quarterly',price:null,officialYield:null,lastUpdate:null,note:'核心主力，每月定額 12,000'},
-    {code:'00878', name:'國泰永續高股息',    type:'tse-etf', shares:34100,cost:17.76,yield:7.2,freq:'monthly',  price:null,officialYield:null,lastUpdate:null,note:'停止加碼，配息轉投 00400A'},
-    {code:'00772B',name:'中信高評級公司債',  type:'tpex-etf',shares:4084, cost:31.98,yield:4.1,freq:'monthly',  price:null,officialYield:null,lastUpdate:null,note:'防禦型，月配轉投 00400A'},
-    {code:'00400A',name:'國泰動能高息主動式',type:'tpex-etf',shares:7000, cost:13.45,yield:5.5,freq:'monthly',  price:null,officialYield:null,lastUpdate:null,note:'主動式 Alpha，建倉 70%'},
-    {code:'00713', name:'元大台灣高息低波',  type:'tse-etf', shares:1384, cost:52.28,yield:4.8,freq:'quarterly',price:null,officialYield:null,lastUpdate:null,note:'防禦配置'}
+    {code:'0050',  name:'元大台灣50',       type:'tse-etf', shares:16895,cost:41.11,yield:3.5,freq:'quarterly',price:null,note:'核心主力，每月定額 12,000'},
+    {code:'00878', name:'國泰永續高股息',    type:'tse-etf', shares:34100,cost:17.76,yield:7.2,freq:'monthly',  price:null,note:'停止加碼，配息轉投 00400A'},
+    {code:'00772B',name:'中信高評級公司債',  type:'tpex-etf',shares:4084, cost:31.98,yield:4.1,freq:'monthly',  price:null,note:'防禦型，月配轉投 00400A'},
+    {code:'00400A',name:'國泰動能高息主動式',type:'tpex-etf',shares:7000, cost:13.45,yield:5.5,freq:'monthly',  price:null,note:'主動式 Alpha，建倉 70%'},
+    {code:'00713', name:'元大台灣高息低波',  type:'tse-etf', shares:1384, cost:52.28,yield:4.8,freq:'quarterly',price:null,note:'防禦配置'}
   ];
 }
 
@@ -664,12 +669,6 @@ function showSB(msg, type) {
   el.className = `sb show sb-${type}`;
   if (type === 'ok') setTimeout(() => { el.className = 'sb'; }, 6000);
 }
-function setProgress(pct, text) {
-  document.getElementById('progressWrap').style.display = 'block';
-  document.getElementById('progressFill').style.width = pct + '%';
-  document.getElementById('progressLabel').textContent = text;
-  if (pct >= 100) setTimeout(() => { document.getElementById('progressWrap').style.display = 'none'; }, 1800);
-}
 function switchTab(t) {
   ['portfolio','manage','retire','apiinfo'].forEach((n, i) => {
     document.querySelectorAll('.tab')[i].classList.toggle('active', n === t);
@@ -679,110 +678,6 @@ function switchTab(t) {
   if (t === 'retire') initRetire();
 }
 
-// ════════════════════════════════════════════
-//  API 抓取
-// ════════════════════════════════════════════
-async function safeFetch(url) {
-  try {
-    const r = await fetch(url, { headers:{ Accept:'application/json' } });
-    return r.ok ? await r.json() : null;
-  } catch { return null; }
-}
-
-function getTodayTW() {
-  const d = new Date();
-  const twTime = new Date(d.toLocaleString('en-US', {timeZone:'Asia/Taipei'}));
-  const y = twTime.getFullYear() - 1911;
-  const m = String(twTime.getMonth()+1).padStart(2,'0');
-  const dd = String(twTime.getDate()).padStart(2,'0');
-  return `${y}/${m}/${dd}`;
-}
-
-function isAfterUpdateTime() {
-  const d = new Date();
-  const tw = new Date(d.toLocaleString('en-US', {timeZone:'Asia/Taipei'}));
-  const isWeekend = tw.getDay()===0 || tw.getDay()===6;
-  if (isWeekend) return false;
-  return tw.getHours() > 17 || (tw.getHours()===17 && tw.getMinutes()>=30);
-}
-
-async function fetchAll() {
-  if (!currentPassword) return;
-  const btn = document.getElementById('fetchBtn');
-  btn.disabled = true;
-
-  const afterUpdate = isAfterUpdateTime();
-  const dateLabel = afterUpdate ? '今日' : '前一交易日（今日 17:30 後才有最新資料）';
-  showSB(`正在載入 ${dateLabel} 盤後資料...`, 'info');
-  setProgress(5, '步驟 1/3：TWSE 收盤價...');
-
-  const [twseData, yieldData] = await Promise.all([
-    safeFetch('https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_AVG_ALL'),
-    safeFetch('https://openapi.twse.com.tw/v1/exchangeReport/BWIBBU_d')
-  ]);
-  setProgress(60, '步驟 2/3：TPEx 上櫃資料...');
-
-  const tpexData = await safeFetch(
-    `https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes?l=zh-tw&d=${encodeURIComponent(getTodayTW())}&s=0,asc,0`
-  );
-  setProgress(85, '比對資料中...');
-
-  let ok = 0, fails = [];
-  const now = new Date().toISOString();
-
-  holdings.forEach((h, i) => {
-    const isTSE = !h.type || h.type.startsWith('tse');
-    let price = null;
-
-    if (isTSE && twseData) {
-      const item = twseData.find(d => d.Code === h.code);
-      if (item && item.ClosingPrice && item.ClosingPrice !== '-')
-        price = parseFloat(item.ClosingPrice);
-    } else if (!isTSE && tpexData) {
-      const item = tpexData.find(d =>
-        (d.SecuritiesCompanyCode||d.Code||d.Symbol||'').trim() === h.code
-      );
-      if (item) {
-        const cp = item.ClosePrice||item.ClosingPrice||item.close||item['收盤價'];
-        if (cp && cp!=='-' && cp!=='--') price = parseFloat(String(cp).replace(/,/g,''));
-      }
-    }
-
-    if (price != null && !isNaN(price)) {
-      holdings[i].price = price;
-      holdings[i].lastUpdate = now;
-      ok++;
-    } else {
-      fails.push(h.code);
-    }
-
-    if (isTSE && yieldData) {
-      const yi = yieldData.find(d => d.Code === h.code);
-      if (yi && yi.DividendYield && yi.DividendYield !== '-')
-        holdings[i].officialYield = parseFloat(yi.DividendYield);
-    }
-  });
-
-  setProgress(100, '完成！');
-
-  let msg = `更新完成：${ok}/${holdings.length} 筆`;
-  if (!afterUpdate) msg += `　⚠ 台灣時間 17:30 前為前一交易日資料`;
-  if (fails.length && ok > 0) msg += `　${fails.join('、')} 查無資料，保留舊價格`;
-  showSB(msg, ok > 0 ? 'ok' : 'warn');
-
-  btn.disabled = false;
-  btn.innerHTML = '<i class="ti ti-refresh"></i> 更新盤後資料';
-  updateHeaderTime();
-  renderPortfolio();
-}
-
-function updateHeaderTime() {
-  const last = holdings.find(h => h.lastUpdate);
-  if (!last) return;
-  const d = new Date(last.lastUpdate);
-  document.getElementById('headerUpdate').textContent =
-    `資料時間 ${d.toLocaleDateString('zh-TW')} ${d.toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'})}`;
-}
 
 // ════════════════════════════════════════════
 //  渲染持股
@@ -791,7 +686,7 @@ function renderPortfolio() {
   const body = document.getElementById('portfolioBody');
   let rows='', totalMV=0, totalCost=0, totalDiv=0;
 
-  holdings.forEach(h => {
+  holdings.forEach((h, i) => {
     const cost = h.shares * h.cost;
     const mv   = h.price != null ? h.shares * h.price : null;
     const pnl  = mv != null ? mv - cost : null;
@@ -804,36 +699,27 @@ function renderPortfolio() {
     totalDiv  += annDiv;
 
     const pc = pnl > 0 ? 'green' : pnl < 0 ? 'red' : '';
-    const priceCell = h.price != null
-      ? `<span class="num">${h.price.toFixed(2)}</span>`
-      : `<span class="dim">—</span>`;
-    const upd = h.lastUpdate
-      ? new Date(h.lastUpdate).toLocaleDateString('zh-TW',{month:'2-digit',day:'2-digit'})
-      : '—';
+    // 現價可直接輸入，onchange 即時更新
+    const priceInput = `<input type="number" step="0.01" class="price-input" value="${h.price != null ? h.price : ''}" placeholder="輸入" onchange="updatePrice(${i}, this.value)" aria-label="${h.code} 現價">`;
 
-    let yc = `<div class="yield-stack"><div class="yield-row">${fd(h.yield)}% <span class="tag tag-manual" style="font-size:9px">自填</span></div>`;
-    if (h.officialYield != null)
-      yc += `<div class="yield-row dim">${fd(h.officialYield)}% <span class="tag tag-tse" style="font-size:9px">官方</span></div>`;
-    yc += '</div>';
+    const yc = `<div class="yield-row">${fd(h.yield)}% <span class="tag tag-manual" style="font-size:9px">自填</span></div>`;
 
     rows += `<tr>
       <td><b style="font-family:var(--mono);font-size:13px">${h.code}</b></td>
       <td style="max-width:120px;font-size:12px">${h.name}</td>
       <td>${typeTag(h.type)} <span class="dim" style="font-size:10px">${freqMap[h.freq]||''}</span></td>
-      <td>${marketTag(h.type)}</td>
       <td class="num">${h.shares.toLocaleString()}</td>
       <td class="num">${fd(h.cost)}</td>
-      <td>${priceCell}</td>
+      <td>${priceInput}</td>
       <td class="num">${fmt(mv!=null?mv:cost)}</td>
       <td class="num ${pc}">${pnl!=null?(pnl>=0?'+':'')+fmt(pnl):'—'}</td>
       <td class="num ${pc}">${pnlP!=null?(pnlP>=0?'+':'')+fd(pnlP)+'%':'—'}</td>
       <td>${yc}</td>
       <td class="num">${fmt(annDiv)}</td>
-      <td class="dim" style="font-size:11px">${upd}</td>
     </tr>`;
   });
 
-  body.innerHTML = rows || '<tr><td colspan="13" style="text-align:center;color:var(--text3);padding:2rem">尚無持股，請至「管理持股」新增</td></tr>';
+  body.innerHTML = rows || '<tr><td colspan="11" style="text-align:center;color:var(--text3);padding:2rem">尚無持股，請至「管理持股」新增</td></tr>';
 
   const totalPnl = totalMV - totalCost;
   const pnlPct   = totalCost > 0 ? totalPnl / totalCost * 100 : 0;
@@ -853,8 +739,22 @@ function renderPortfolio() {
   const wY = totalMV > 0 ? totalDiv / totalMV * 100 : 0;
   document.getElementById('avgYield').textContent = '加權殖利率 ' + fd(wY) + '%';
 
-  updateHeaderTime();
   renderCharts();
+}
+
+// 手動更新單一持股現價
+function updatePrice(i, val) {
+  const p = parseFloat(val);
+  holdings[i].price = (!isNaN(p) && p > 0) ? p : null;
+  renderPortfolio();
+}
+
+// 清除所有現價
+function clearPrices() {
+  if (!confirm('確定清除所有已輸入的現價？')) return;
+  holdings.forEach(h => h.price = null);
+  renderPortfolio();
+  showSB('已清除所有現價', 'ok');
 }
 
 // ════════════════════════════════════════════
@@ -929,9 +829,7 @@ function addOrUpdate() {
     yield: parseFloat(document.getElementById('fYield').value)||0,
     freq:  document.getElementById('fFreq').value,
     note:  document.getElementById('fNote').value.trim(),
-    price: editIdx>=0 ? holdings[editIdx].price : null,
-    officialYield: editIdx>=0 ? holdings[editIdx].officialYield : null,
-    lastUpdate: editIdx>=0 ? holdings[editIdx].lastUpdate : null
+    price: editIdx>=0 ? holdings[editIdx].price : null
   };
 
   if (editIdx>=0) { holdings[editIdx]=h; editIdx=-1; }
